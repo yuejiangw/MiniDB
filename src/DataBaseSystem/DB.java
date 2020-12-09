@@ -1,34 +1,30 @@
 package DataBaseSystem;
 
 import Parser.CommandParser;
-import bPlusTree.Parser;
 import file.FileReader;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class DB {
     //----------------
     // Attributes
     //----------------
 
-    private HashMap<String, Table> tables;
+    private LinkedHashMap<String, Table> tables;
 
     //----------------
     // Constructor(s)
     //----------------
     public DB() {
-        tables = new HashMap<>();
+        tables = new LinkedHashMap<>();
     }
 
 
     //----------------
     // Accessors
     //----------------
-    public void setTables(HashMap<String, Table> tables) {
+    public void setTables(LinkedHashMap<String, Table> tables) {
         this.tables = tables;
     }
 
@@ -75,7 +71,7 @@ public class DB {
      * there is no table with the same name. Otherwise, the old table with
      * the same name will be overlapped.
      *
-     * @param parser
+     * @param parser used for parsing command.
      * @throws IOException if anything goes wrong when reading files.
      */
     public void inputFromFile(CommandParser parser) throws IOException {
@@ -154,7 +150,7 @@ public class DB {
     /**
      * Do projection operation on certain columns of the target table.
      *
-     * @param parser
+     * @param parser used for parsing the command
      */
     public void project(CommandParser parser) {
         Table targetTable = getTableByName(parser.getArguments().get(0));
@@ -182,8 +178,10 @@ public class DB {
 
     /**
      *
-     * @param parser
-     * @param mode "avg" or "sum"
+     * @param parser used for parsing the command
+     * @param mode either "avg" or "sum", "avg" means get the average value of the
+     *             target column, "sum" means get the summation value of the target
+     *             column.
      */
     public void avgOrSum(CommandParser parser, String mode) {
         Table targetTable = getTableByName(parser.getArguments().get(0));

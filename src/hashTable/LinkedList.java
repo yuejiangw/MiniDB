@@ -45,9 +45,7 @@ public class LinkedList {
     //-----------------------------
 
     boolean isEmpty() {
-        if (getHead() == null)
-            return true;
-        return false;
+        return getHead() == null;
     }
 
     /**
@@ -70,6 +68,7 @@ public class LinkedList {
                 }
                 current = current.next;
             }
+            assert getHead() != null;
             newNode.next = getHead().next;
             getHead().next = newNode;
         }
