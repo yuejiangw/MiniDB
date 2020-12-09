@@ -12,9 +12,13 @@ public class CommandParser {
             "select", "project", "sum", "avg", "sumgroup", "avggroup", "join",
             "sort", "movavg", "movsum", "Btree", "Hash", "concat", "showDB"};
 
+    private final static String[] allOperators = {">", "<", "=", "!=", ">=", "<="};
+
+
     private String tableName;
     private String commandName;
     private ArrayList<String> arguments;
+    private OperationExpression condition;
 
 
     //----------------
@@ -25,6 +29,7 @@ public class CommandParser {
         tableName = null;
         commandName = null;
         arguments = new ArrayList<>();
+        condition = null;
     }
 
 
@@ -34,6 +39,10 @@ public class CommandParser {
 
     public static String[] getAllCommands() {
         return allCommands;
+    }
+
+    public static String[] getAllOperators() {
+        return allOperators;
     }
 
     public void setTableName(String tb) {
@@ -56,6 +65,13 @@ public class CommandParser {
         return this.arguments;
     }
 
+    public OperationExpression getCondition() {
+        return condition;
+    }
+
+    public void setCondition(OperationExpression condition) {
+        this.condition = condition;
+    }
 
     //----------------
     // Other Methods.
@@ -81,9 +97,77 @@ public class CommandParser {
      */
     private void parseSelectCommand(String strArguments) {
         String[] argumentsSplit = strArguments.split(",");
-        getArguments().add(argumentsSplit[0]);
+        String targetTable = argumentsSplit[0];
+        String condition = argumentsSplit[1];
+        getArguments().add(targetTable);
+
+        parseOperator(condition);
+        parseOperands(condition, getCondition());
     }
 
+    private void parseOperator(String condition) {
+        if (condition.contains(">")) {
+            if (condition.contains(">="))
+                getCondition().setOperator(">=");
+            else
+                getCondition().setOperator(">");
+        }
+        else if (condition.contains("<")) {
+            if (condition.contains("<="))
+                getCondition().setOperator("<=");
+            else
+                getCondition().setOperator("<");
+        }
+        else if (condition.contains("!=")) {
+            getCondition().setOperator("!=");
+        }
+        else if (condition.contains("=")) {
+            getCondition().setOperator("=");
+        }
+        else {
+            System.out.println("Error! Something is wrong with the condition, " +
+                    "please recheck carefully.");
+            return;
+        }
+    }
+
+    private void parseOperands(String condition, OperationExpression oe) {
+        if (oe.isEqual()) {
+            oe.setOperand1(condition.split("=")[0]);
+            oe.setOperand2(condition.split("=")[1]);
+        }
+        else if (oe.isGreater()) {
+            oe.setOperand1(condition.split(">")[0]);
+            oe.setOperand2(condition.split(">")[1]);
+        }
+        else if (oe.isLess()) {
+            oe.setOperand1(condition.split("<")[0]);
+            oe.setOperand2(condition.split("<")[1]);
+        }
+        else if (oe.isGreaterEqual()) {
+            oe.setOperand1(condition.split(">=")[0]);
+            oe.setOperand2(condition.split(">=")[1]);
+        }
+        else if (oe.isLessEqual()) {
+            oe.setOperand1(condition.split("<=")[0]);
+            oe.setOperand2(condition.split("<=")[1]);
+        }
+        else if (oe.isNotEqual()) {
+            oe.setOperand1(condition.split("!=")[0]);
+            oe.setOperand2(condition.split("!=")[1]);
+        }
+        else {
+            System.out.println("Error! Something is wrong with the condition, " +
+                    "please recheck carefully.");
+            return;
+        }
+    }
+
+
+    /**
+     *
+     * @param str
+     */
     public void parseCommand(String str) {
 
         // Delete all the spaces
@@ -118,7 +202,9 @@ public class CommandParser {
         // The format of the "select" command is special,
         // we need to deal with it separately.
         if (isSelect()) {
+            setCondition(new OperationExpression());
             parseSelectCommand(strArguments);
+            getCondition().formalType();
         }
 
         String[] argumentsSplit = strArguments.split(",");

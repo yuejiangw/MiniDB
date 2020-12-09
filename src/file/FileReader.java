@@ -158,7 +158,7 @@ public class FileReader {
      * @param str the target string
      * @return true if the string can be parsed into integer, otherwise false.
      */
-    private boolean canParseInt(String str) {
+    public static boolean canParseInt(String str) {
         if (str == null)
             return false;
         return str.matches("\\d+");
