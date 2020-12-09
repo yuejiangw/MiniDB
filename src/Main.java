@@ -15,6 +15,13 @@ public class Main {
         DB dataBase = new DB();
 
         while (!(command = input.nextLine()).equals("exit")) {
+
+            // showDB
+            if (command.equals("showDB")) {
+                dataBase.getDBMessage();
+                continue;
+            }
+
             CommandParser commandParser = new CommandParser();
             commandParser.parseCommand(command);
 

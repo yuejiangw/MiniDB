@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 public class DB {
     //----------------
@@ -41,6 +42,18 @@ public class DB {
 
     public int getTableNum() {
         return getTables().size();
+    }
+
+    public void getDBMessage() {
+        if (getTableNum() == 0) {
+            System.out.println("There is no table in the current DB!");
+            return;
+        }
+        System.out.println("Total number of tables:" + getTableNum());
+        for (Map.Entry<String, Table> entry : getTables().entrySet()) {
+            System.out.print(entry.getKey() + "\t");
+        }
+        System.out.println();
     }
 
     /**

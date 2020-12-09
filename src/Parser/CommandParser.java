@@ -10,7 +10,7 @@ public class CommandParser {
 
     private final static String[] allCommands = {"inputfromfile", "outputtofile",
             "select", "project", "sum", "avg", "sumgroup", "avggroup", "join",
-            "sort", "movavg", "movsum", "Btree", "Hash", "concat"};
+            "sort", "movavg", "movsum", "Btree", "Hash", "concat", "showDB"};
 
     private String tableName;
     private String commandName;
@@ -70,43 +70,47 @@ public class CommandParser {
         return Arrays.asList(getAllCommands()).contains(command);
     }
 
-    public void parseCommand(String str) throws IndexOutOfBoundsException {
-        try {
-            // Delete all the spaces
-            str = str.replaceAll("\\s", "");
-            String[] strSplit = str.split(":=");
-            String strParenthesis = null;
+    public boolean isManageCommand(String command) {
+        if (!command.contains(":=") && !command.contains("(") && !command.contains(")"))
+            return isValidCommand(command);
+        return false;
+    }
 
-            // Normal commands with certain table names.
-            if (strSplit.length > 1) {
-                setTableName(strSplit[0]);
-                strParenthesis = strSplit[1];
-            }
-            // Add index and output file commands, such commands don't have table names.
-            else if (strSplit.length == 1) {
-                setTableName("");
-                strParenthesis = strSplit[0];
-            }
+    public void parseCommand(String str) {
 
-            setCommandName(strParenthesis.split("\\(")[0]);
+        // Delete all the spaces
+        str = str.replaceAll("\\s", "");
+        String[] strSplit = str.split(":=");
+        String strParenthesis = null;
 
-            if (!isValidCommand(getCommandName())) {
-                System.out.println("Error! Not a valid command, please recheck.");
-                return;
-            }
-
-            String strArguments = strParenthesis.substring(
-                    getCommandName().length() + 1, strParenthesis.length() - 1);
-            String[] argumentsSplit = strArguments.split(",");
-
-            resetArguments();
-
-            for (int i = 0; i < argumentsSplit.length; i++) {
-                getArguments().add(argumentsSplit[i]);
-            }
-        } catch (IndexOutOfBoundsException e) {
-            System.out.println("Sorry, your command can't be parsed, please input again.");
+        // Normal commands with certain table names.
+        if (strSplit.length > 1) {
+            setTableName(strSplit[0]);
+            strParenthesis = strSplit[1];
         }
+        // Add index and output file commands, such commands don't have table names.
+        else if (strSplit.length == 1) {
+            setTableName("");
+            strParenthesis = strSplit[0];
+        }
+
+        setCommandName(strParenthesis.split("\\(")[0]);
+
+        if (!isValidCommand(getCommandName())) {
+            System.out.println("Error! Not a valid command, please recheck.");
+            return;
+        }
+
+        String strArguments = strParenthesis.substring(
+                getCommandName().length() + 1, strParenthesis.length() - 1);
+        String[] argumentsSplit = strArguments.split(",");
+
+        resetArguments();
+
+        for (int i = 0; i < argumentsSplit.length; i++) {
+            getArguments().add(argumentsSplit[i]);
+        }
+
     }
 
     public boolean isInputFromFile() {
