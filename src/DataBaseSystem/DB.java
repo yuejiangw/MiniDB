@@ -53,7 +53,8 @@ public class DB {
     }
 
     /**
-     *  To get a table from DB by the table's name.
+     * To get a table from DB by the table's name.
+     *
      * @param name the table's name that we want to get.
      * @return target table if the DB contains the table, otherwise null.
      */
@@ -123,11 +124,6 @@ public class DB {
                     "recheck carefully!");
             return;
         }
-        Table currentTable = getTableByName(parser.getArguments().get(0));
-        if (currentTable != null && currentTable.getAvgValue() != -1.0)
-            table.showAvgOrSum("avg");
-        else if (currentTable != null && currentTable.getSumValue() != -1.0)
-            table.showAvgOrSum("sum");
         else
             table.showTable();
     }
@@ -183,7 +179,7 @@ public class DB {
     }
 
     /**
-     *
+     * Calculate the summation or average value of certain column.
      * @param parser used for parsing the command
      * @param mode either "avg" or "sum", "avg" means get the average value of the
      *             target column, "sum" means get the summation value of the target
@@ -206,33 +202,35 @@ public class DB {
         // Get the target column data.
         String columnName = parser.getArguments().get(1);
         ArrayList<Integer> targetColumn = targetTable.getColumnData().get(columnName);
-
-        // Calculate the average/sum value of the column.
-        double sum = 0.0;
-        for (int columnValue : targetColumn) {
-            sum += columnValue;
+        if (targetColumn == null) {
+            System.out.println("Error! The target column doesn't exist, please " +
+                    "recheck carefully!");
+            return;
         }
 
-        double avgValue = sum / targetColumn.size();
+        // Calculate the average/sum value of the column.
+        int sum = 0;
+        for (int columnValue : targetColumn)
+            sum += columnValue;
+        int avgValue = sum / targetColumn.size();
 
         // Set column name and the corresponding data.
         // Update the row data as well.
-
         String newColumnName = mode + "(" + columnName + ")";
         newTable.getColumnNames().add(newColumnName);
         ArrayList<Integer> newColumnData = new ArrayList<>();
 
         if (mode.equals("avg"))
-            newTable.setAvgValue(avgValue);
-//            newColumnData.add(avgValue);
+            newColumnData.add(avgValue);
         else if (mode.equals("sum"))
-            newTable.setSumValue(sum);
-//            newColumnData.add(sum);
-        else
+            newColumnData.add(sum);
+        else {
             System.out.println("Error! Mode can only be avg or sum!");
+            return;
+        }
 
-//        newTable.getColumnData().put(newColumnName, newColumnData);
-//        newTable.updateRowData(null);
+        newTable.getColumnData().put(newColumnName, newColumnData);
+        newTable.updateRowData(null);
         getTables().put(newName, newTable);
     }
 

@@ -32,7 +32,6 @@ public class CommandParser {
     // Accessors
     //----------------
 
-
     public static String[] getAllCommands() {
         return allCommands;
     }
@@ -76,6 +75,15 @@ public class CommandParser {
         return false;
     }
 
+    /**
+     * Parse "select" command separately.
+     * @param strArguments a string that contains all the arguments and the CONDITION.
+     */
+    private void parseSelectCommand(String strArguments) {
+        String[] argumentsSplit = strArguments.split(",");
+        getArguments().add(argumentsSplit[0]);
+    }
+
     public void parseCommand(String str) {
 
         // Delete all the spaces
@@ -88,15 +96,17 @@ public class CommandParser {
             setTableName(strSplit[0]);
             strParenthesis = strSplit[1];
         }
-        // Add index and output file commands, such commands don't have table names.
+        // Add index and output file commands, these commands don't have table names.
         else if (strSplit.length == 1) {
             setTableName("");
             strParenthesis = strSplit[0];
         }
+
         // The commands entered are case agnostic.
         assert strParenthesis != null;
         setCommandName(strParenthesis.split("\\(")[0].toLowerCase());
 
+        // To judge whether the input command is valid.
         if (!isValidCommand(getCommandName())) {
             System.out.println("Error! Not a valid command, please recheck.");
             return;
@@ -104,15 +114,24 @@ public class CommandParser {
 
         String strArguments = strParenthesis.substring(
                 getCommandName().length() + 1, strParenthesis.length() - 1);
+
+        // The format of the "select" command is special,
+        // we need to deal with it separately.
+        if (isSelect()) {
+            parseSelectCommand(strArguments);
+        }
+
         String[] argumentsSplit = strArguments.split(",");
 
         resetArguments();
-
         for (String s : argumentsSplit) {
             getArguments().add(s);
         }
-
     }
+
+
+
+
 
     public boolean isInputFromFile() {
         return getCommandName().equals("inputfromfile");
