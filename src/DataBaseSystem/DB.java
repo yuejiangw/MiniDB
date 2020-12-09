@@ -123,7 +123,13 @@ public class DB {
                     "recheck carefully!");
             return;
         }
-        table.showTable();
+        Table currentTable = getTableByName(parser.getArguments().get(0));
+        if (currentTable != null && currentTable.getAvgValue() != -1.0)
+            table.showAvgOrSum("avg");
+        else if (currentTable != null && currentTable.getSumValue() != -1.0)
+            table.showAvgOrSum("sum");
+        else
+            table.showTable();
     }
 
     /**
@@ -202,12 +208,12 @@ public class DB {
         ArrayList<Integer> targetColumn = targetTable.getColumnData().get(columnName);
 
         // Calculate the average/sum value of the column.
-        int sum = 0;
+        double sum = 0.0;
         for (int columnValue : targetColumn) {
             sum += columnValue;
         }
 
-        int avgValue = sum / targetColumn.size();
+        double avgValue = sum / targetColumn.size();
 
         // Set column name and the corresponding data.
         // Update the row data as well.
@@ -217,14 +223,16 @@ public class DB {
         ArrayList<Integer> newColumnData = new ArrayList<>();
 
         if (mode.equals("avg"))
-            newColumnData.add(avgValue);
+            newTable.setAvgValue(avgValue);
+//            newColumnData.add(avgValue);
         else if (mode.equals("sum"))
-            newColumnData.add(sum);
+            newTable.setSumValue(sum);
+//            newColumnData.add(sum);
         else
             System.out.println("Error! Mode can only be avg or sum!");
 
-        newTable.getColumnData().put(newColumnName, newColumnData);
-        newTable.updateRowData(null);
+//        newTable.getColumnData().put(newColumnName, newColumnData);
+//        newTable.updateRowData(null);
         getTables().put(newName, newTable);
     }
 

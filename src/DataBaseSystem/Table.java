@@ -20,7 +20,8 @@ public class Table {
     // To make sure that we can get ordered items,
     // we need to use LinkedHashMap instead of HashMap.
     private LinkedHashMap<String, ArrayList<Integer>> columnData;
-
+    private double avgValue;
+    private double sumValue;
 
     //----------------
     // Constructors
@@ -31,6 +32,8 @@ public class Table {
         this.columnNames = new ArrayList<>();
         this.rowData = new ArrayList<>();
         this.columnData = new LinkedHashMap<>();
+        this.avgValue = -1.0;
+        this.sumValue = -1.0;
     }
 
     public Table(String tableName) {
@@ -38,6 +41,8 @@ public class Table {
         this.columnNames = new ArrayList<>();
         this.rowData = new ArrayList<>();
         this.columnData = new LinkedHashMap<>();
+        this.avgValue = -1.0;
+        this.sumValue = -1.0;
     }
 
     //----------------
@@ -74,6 +79,22 @@ public class Table {
 
     public void setColumnData(LinkedHashMap<String, ArrayList<Integer>> columnData) {
         this.columnData = columnData;
+    }
+
+    public void setAvgValue(double avgValue) {
+        this.avgValue = avgValue;
+    }
+
+    public double getAvgValue() {
+        return avgValue;
+    }
+
+    public void setSumValue(double sumValue) {
+        this.sumValue = sumValue;
+    }
+
+    public double getSumValue() {
+        return sumValue;
     }
 
     //----------------
@@ -209,6 +230,14 @@ public class Table {
             System.out.println();
         }
         System.out.println();
+    }
+
+    public void showAvgOrSum(String mode) {
+        System.out.println(getColumnNames().get(0));
+        if (mode.equals("avg"))
+            System.out.println(getAvgValue());
+        else if (mode.equals("sum"))
+            System.out.println(getSumValue());
     }
 
 }

@@ -93,8 +93,9 @@ public class CommandParser {
             setTableName("");
             strParenthesis = strSplit[0];
         }
-
-        setCommandName(strParenthesis.split("\\(")[0]);
+        // The commands entered are case agnostic.
+        assert strParenthesis != null;
+        setCommandName(strParenthesis.split("\\(")[0].toLowerCase());
 
         if (!isValidCommand(getCommandName())) {
             System.out.println("Error! Not a valid command, please recheck.");
@@ -107,8 +108,8 @@ public class CommandParser {
 
         resetArguments();
 
-        for (int i = 0; i < argumentsSplit.length; i++) {
-            getArguments().add(argumentsSplit[i]);
+        for (String s : argumentsSplit) {
+            getArguments().add(s);
         }
 
     }
