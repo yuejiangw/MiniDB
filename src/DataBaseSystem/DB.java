@@ -6,6 +6,7 @@ import file.FileReader;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class DB {
@@ -169,11 +170,12 @@ public class DB {
     /**
      *
      * @param parser
+     * @param mode "avg" or "sum"
      */
-    public void avg(CommandParser parser) {
+    public void avgOrSum(CommandParser parser, String mode) {
         Table targetTable = getTableByName(parser.getArguments().get(0));
 
-        // Check if the target exists.
+        // Check if the target table exists.
         if (targetTable == null) {
             System.out.println("Error! The target table doesn't exist, please " +
                     "recheck carefully!");
@@ -188,21 +190,31 @@ public class DB {
         String columnName = parser.getArguments().get(1);
         ArrayList<Integer> targetColumn = targetTable.getColumnData().get(columnName);
 
-        // Calculate the average value of the column.
+        // Calculate the average/sum value of the column.
         int sum = 0;
         for (int columnValue : targetColumn) {
             sum += columnValue;
         }
+
         int avgValue = sum / targetColumn.size();
 
-        // Set column name and the average value.
+        // Set column name and the corresponding data.
         // Update the row data as well.
-        newTable.getColumnNames().add("avg(" + columnName + ")");
-        newTable.getColumnData().get(columnName).add(avgValue);
-        newTable.getRowData().get(0).add(avgValue);
+
+        String newColumnName = mode + "(" + columnName + ")";
+        newTable.getColumnNames().add(newColumnName);
+        ArrayList<Integer> newColumnData = new ArrayList<>();
+
+        if (mode.equals("avg"))
+            newColumnData.add(avgValue);
+        else if (mode.equals("sum"))
+            newColumnData.add(sum);
+        else
+            System.out.println("Error! Mode can only be avg or sum!");
+
+        newTable.getColumnData().put(newColumnName, newColumnData);
+        newTable.updateRowData(null);
+        getTables().put(newName, newTable);
     }
 
-    public void sum(CommandParser parser) {
-
-    }
 }

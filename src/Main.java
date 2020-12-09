@@ -45,10 +45,18 @@ public class Main {
             // R3 := avg(R1, saleid)
             else if (commandParser.isAvg()) {
                 long startTime = System.currentTimeMillis();
-                dataBase.avg(commandParser);
+                dataBase.avgOrSum(commandParser, "avg");
                 long endTime = System.currentTimeMillis();
                 System.out.println("Execution time: " + (endTime - startTime) + "ms");
 
+            }
+
+            // R4 := sum(R1, saleid)
+            else if (commandParser.isSum()) {
+                long startTime = System.currentTimeMillis();
+                dataBase.avgOrSum(commandParser, "sum");
+                long endTime = System.currentTimeMillis();
+                System.out.println("Execution time: " + (endTime - startTime) + "ms");
             }
 
         }

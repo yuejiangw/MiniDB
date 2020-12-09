@@ -138,6 +138,9 @@ public class Table {
         }
     }
 
+    public void updateColumnData() {}
+
+
     /**
      * Import data from current file.
      * The method is overloaded, one is without any parameter and will use
