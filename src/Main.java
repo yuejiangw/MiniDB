@@ -66,6 +66,15 @@ public class Main {
                 System.out.println("Execution time: " + (endTime - startTime) + "ms");
             }
 
+            // R5 := select(R1, CONDITION)
+            else if (commandParser.isSelect()) {
+                long startTime = System.currentTimeMillis();
+                dataBase.select(commandParser);
+                long endTime = System.currentTimeMillis();
+                System.out.println("Execution time: " + (endTime - startTime) + "ms");
+            }
+
+            //
         }
     }
 }

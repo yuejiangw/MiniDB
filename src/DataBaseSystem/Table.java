@@ -91,9 +91,10 @@ public class Table {
         setRowData(new ArrayList<>());
     }
 
+
     /**
      * Organize the column ordered data into the row form.
-     *
+     * Be aware that we need to have column data and column names first.
      * @param fileReader
      */
     public void updateRowData(FileReader fileReader) {
@@ -137,7 +138,24 @@ public class Table {
         }
     }
 
-    public void updateColumnData() {}
+
+    /**
+     * Organize the row ordered data into the column form.
+     * Be aware that we need to have row data and the column names first.
+     */
+    public void updateColumnData() {
+        setColumnData(new LinkedHashMap<>());
+        int rowNumber = getRowData().size();
+        int columnNumber = getColumnNames().size();
+        for (int i = 0; i < columnNumber; i++) {
+            String currentColumnName = getColumnNames().get(i);
+            getColumnData().put(currentColumnName, new ArrayList<>());
+            for (int j = 0; j < rowNumber; j++) {
+                ArrayList<Integer> currentRowData = getRowData().get(j);
+                getColumnData().get(currentColumnName).add(currentRowData.get(i));
+            }
+        }
+    }
 
 
     /**
@@ -187,8 +205,6 @@ public class Table {
         FileWriter.writeFile(getColumnNames(), getRowData(), fileName, delimiter);
     }
 
-
-
     /**
      * Show current table.
      */
@@ -208,6 +224,6 @@ public class Table {
             System.out.println();
         }
         System.out.println();
+        System.out.println("There are " + getRowData().size() + " row(s) in the table.");
     }
-
 }

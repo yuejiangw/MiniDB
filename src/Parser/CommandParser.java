@@ -18,7 +18,7 @@ public class CommandParser {
     private String tableName;
     private String commandName;
     private ArrayList<String> arguments;
-    private OperationExpression condition;
+    private OperationExpression selectCondition;
 
 
     //----------------
@@ -29,7 +29,7 @@ public class CommandParser {
         tableName = null;
         commandName = null;
         arguments = new ArrayList<>();
-        condition = null;
+        selectCondition = null;
     }
 
 
@@ -66,11 +66,11 @@ public class CommandParser {
     }
 
     public OperationExpression getCondition() {
-        return condition;
+        return selectCondition;
     }
 
     public void setCondition(OperationExpression condition) {
-        this.condition = condition;
+        this.selectCondition = condition;
     }
 
     //----------------
@@ -165,8 +165,8 @@ public class CommandParser {
 
 
     /**
-     *
-     * @param str
+     * Parse the input string into different kinds of commands.
+     * @param str the target string needs to be parsed
      */
     public void parseCommand(String str) {
 

@@ -1,6 +1,7 @@
 package DataBaseSystem;
 
 import Parser.CommandParser;
+import Parser.OperationExpression;
 import file.FileReader;
 
 import java.io.IOException;
@@ -232,6 +233,158 @@ public class DB {
         newTable.getColumnData().put(newColumnName, newColumnData);
         newTable.updateRowData(null);
         getTables().put(newName, newTable);
+    }
+
+    /**
+     * The select command.
+     * @param parser
+     */
+    public void select(CommandParser parser) {
+        Table targetTable = getTableByName(parser.getArguments().get(0));
+
+        // Check if the target table exists.
+        if (targetTable == null) {
+            System.out.println("Error! The target table doesn't exist, please " +
+                    "recheck carefully!");
+            return;
+        }
+
+        // Create a new table and copy all the column names.
+        String newName = parser.getTableName();
+        Table newTable = new Table(newName);
+        newTable.setColumnNames(targetTable.getColumnNames());
+
+        // Get the select conditions.
+        OperationExpression condition = parser.getCondition();
+        // Operand 1 is an integer
+        if (condition.isOperand1Int()) {
+            int constant = condition.getOperand1Int();
+            String columnName = condition.getOperand2();
+            selectByConstant(targetTable, newTable, columnName,
+                    condition.getOperator(), constant);
+        }
+        // Operand 2 is an integer
+        else if (condition.isOperand2Int()) {
+            int constant = condition.getOperand2Int();
+            String columnName = condition.getOperand1();
+            selectByConstant(targetTable, newTable, columnName,
+                    condition.getOperator(), constant);
+        }
+        // Operand 1 and operand 2 are two column names
+        else {
+            String column1 = condition.getOperand1();
+            String column2 = condition.getOperand2();
+            selectByColumn(targetTable, newTable, column1,
+                    condition.getOperator(), column2);
+        }
+    }
+
+    private void selectByConstant(Table targetTable, Table newTable,
+                                  String columnName, String operator,
+                                  int constant) throws NullPointerException {
+        try {
+            ArrayList<Integer> columnData = targetTable.getColumnData().get(columnName);
+            ArrayList<ArrayList<Integer>> oldRowData = targetTable.getRowData();
+            ArrayList<ArrayList<Integer>> newRowData = new ArrayList<>();
+            for (int i = 0; i < columnData.size(); i++) {
+                if (operator.equals("<")) {
+                    if (columnData.get(i) < constant) {
+                        newRowData.add(oldRowData.get(i));
+                    }
+                }
+                else if (operator.equals(">")) {
+                    if (columnData.get(i) > constant) {
+                        newRowData.add(oldRowData.get(i));
+                    }
+                }
+                else if (operator.equals("=")) {
+                    if (columnData.get(i) == constant) {
+                        newRowData.add(oldRowData.get(i));
+                    }
+                }
+                else if (operator.equals("<=")) {
+                    if (columnData.get(i) <= constant) {
+                        newRowData.add(oldRowData.get(i));
+                    }
+                }
+                else if (operator.equals(">=")) {
+                    if (columnData.get(i) >= constant) {
+                        newRowData.add(oldRowData.get(i));
+                    }
+                }
+                else if (operator.equals("!=")) {
+                    if (columnData.get(i) != constant) {
+                        newRowData.add(oldRowData.get(i));
+                    }
+                }
+                else {
+                    System.out.println("Error! The operator can only be '>', '<', " +
+                            "'=', '>=', '<=', or '!='. Please recheck.");
+                    return;
+                }
+            }
+            newTable.setRowData(newRowData);
+            newTable.updateColumnData();
+        }
+        catch (NullPointerException e) {
+            System.out.println("Error! The column name doesn't exist! Please recheck.");
+        }
+    }
+
+    private void selectByColumn(Table targetTable, Table newTable,
+                                  String column1, String operator,
+                                  String column2) throws NullPointerException {
+        try {
+            ArrayList<Integer> columnData1 = targetTable.getColumnData().get(column1);
+            ArrayList<Integer> columnData2 = targetTable.getColumnData().get(column2);
+            ArrayList<ArrayList<Integer>> oldRowData = targetTable.getRowData();
+            ArrayList<ArrayList<Integer>> newRowData = new ArrayList<>();
+
+            assert columnData1.size() == columnData2.size();
+
+            for (int i = 0; i < columnData1.size(); i++) {
+                if (operator.equals("<")) {
+                    if (columnData1.get(i) < columnData2.get(i)) {
+                        newRowData.add(oldRowData.get(i));
+                    }
+                }
+                else if (operator.equals(">")) {
+                    if (columnData1.get(i) > columnData2.get(i)) {
+                        newRowData.add(oldRowData.get(i));
+                    }
+                }
+                else if (operator.equals("=")) {
+                    if (columnData1.get(i) == columnData2.get(i)) {
+                        newRowData.add(oldRowData.get(i));
+                    }
+                }
+                else if (operator.equals("<=")) {
+                    if (columnData1.get(i) <= columnData2.get(i)) {
+                        newRowData.add(oldRowData.get(i));
+                    }
+                }
+                else if (operator.equals(">=")) {
+                    if (columnData1.get(i) >= columnData2.get(i)) {
+                        newRowData.add(oldRowData.get(i));
+                    }
+                }
+                else if (operator.equals("!=")) {
+                    if (columnData1.get(i) != columnData2.get(i)) {
+                        newRowData.add(oldRowData.get(i));
+                    }
+                }
+                else {
+                    System.out.println("Error! The operator can only be '>', '<', " +
+                            "'=', '>=', '<=', or '!='. Please recheck.");
+                    return;
+                }
+            }
+            newTable.setRowData(newRowData);
+            newTable.updateColumnData();
+        }
+        catch (NullPointerException e) {
+            System.out.println("Error! The column name doesn't exist! Please recheck.");
+        }
     }
 
 }
