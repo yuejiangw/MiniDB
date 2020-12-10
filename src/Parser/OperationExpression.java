@@ -117,9 +117,12 @@ public class OperationExpression {
     }
 
     public void formalType() {
-        if (FileReader.canParseInt(getOperand1()))
+        if (FileReader.canParseInt(getOperand1())){
             setOperand1Int(Integer.parseInt(getOperand1()));
+            setOperand1Int(true);
+        }
         if (FileReader.canParseInt(getOperand2()))
             setOperand2Int(Integer.parseInt(getOperand2()));
+            setOperand2Int(true);
     }
 }

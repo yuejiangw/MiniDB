@@ -277,6 +277,7 @@ public class DB {
             selectByColumn(targetTable, newTable, column1,
                     condition.getOperator(), column2);
         }
+        getTables().put(newName, newTable);
     }
 
     private void selectByConstant(Table targetTable, Table newTable,
