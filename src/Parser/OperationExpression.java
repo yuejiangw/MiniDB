@@ -12,9 +12,6 @@ public class OperationExpression {
     private boolean isOperand1Int;
     private boolean isOperand2Int;
 
-    private int operand1Int;
-    private int operand2Int;
-
     //----------------
     // Constructor(s)
     //----------------
@@ -24,8 +21,6 @@ public class OperationExpression {
         operator = null;
         isOperand1Int = false;
         isOperand2Int = false;
-        operand1Int = -1;
-        operand2Int = -1;
     }
 
 
@@ -72,21 +67,6 @@ public class OperationExpression {
         isOperand2Int = operand2Int;
     }
 
-    public void setOperand1Int(int operand1Int) {
-        this.operand1Int = operand1Int;
-    }
-
-    public int getOperand1Int() {
-        return operand1Int;
-    }
-
-    public int getOperand2Int() {
-        return operand2Int;
-    }
-
-    public void setOperand2Int(int operand2Int) {
-        this.operand2Int = operand2Int;
-    }
 
 
     //----------------
@@ -118,11 +98,9 @@ public class OperationExpression {
 
     public void formalType() {
         if (FileReader.canParseInt(getOperand1())){
-            setOperand1Int(Integer.parseInt(getOperand1()));
             setOperand1Int(true);
         }
         if (FileReader.canParseInt(getOperand2()))
-            setOperand2Int(Integer.parseInt(getOperand2()));
             setOperand2Int(true);
     }
 }

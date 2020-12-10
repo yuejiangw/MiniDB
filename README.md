@@ -25,7 +25,7 @@
 | 是否完成 |     指令      |
 | :------: | :-----------: |
 |    y     | inputfromfile |
-|          |    select     |
+|    y     |    select     |
 |    y     |    project    |
 |    y     |      sum      |
 |    y     |      avg      |

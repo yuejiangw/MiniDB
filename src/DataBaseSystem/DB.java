@@ -236,8 +236,9 @@ public class DB {
     }
 
     /**
-     * The select command.
-     * @param parser
+     * Select certain columns from the target table under the restriction of
+     * some conditions.
+     * @param parser used for parsing the command.
      */
     public void select(CommandParser parser) {
         Table targetTable = getTableByName(parser.getArguments().get(0));
@@ -258,14 +259,14 @@ public class DB {
         OperationExpression condition = parser.getCondition();
         // Operand 1 is an integer
         if (condition.isOperand1Int()) {
-            int constant = condition.getOperand1Int();
+            int constant = Integer.parseInt(condition.getOperand1());
             String columnName = condition.getOperand2();
             selectByConstant(targetTable, newTable, columnName,
                     condition.getOperator(), constant);
         }
         // Operand 2 is an integer
         else if (condition.isOperand2Int()) {
-            int constant = condition.getOperand2Int();
+            int constant = Integer.parseInt(condition.getOperand2());
             String columnName = condition.getOperand1();
             selectByConstant(targetTable, newTable, columnName,
                     condition.getOperator(), constant);
@@ -288,40 +289,41 @@ public class DB {
             ArrayList<ArrayList<Integer>> oldRowData = targetTable.getRowData();
             ArrayList<ArrayList<Integer>> newRowData = new ArrayList<>();
             for (int i = 0; i < columnData.size(); i++) {
-                if (operator.equals("<")) {
-                    if (columnData.get(i) < constant) {
-                        newRowData.add(oldRowData.get(i));
-                    }
-                }
-                else if (operator.equals(">")) {
-                    if (columnData.get(i) > constant) {
-                        newRowData.add(oldRowData.get(i));
-                    }
-                }
-                else if (operator.equals("=")) {
-                    if (columnData.get(i) == constant) {
-                        newRowData.add(oldRowData.get(i));
-                    }
-                }
-                else if (operator.equals("<=")) {
-                    if (columnData.get(i) <= constant) {
-                        newRowData.add(oldRowData.get(i));
-                    }
-                }
-                else if (operator.equals(">=")) {
-                    if (columnData.get(i) >= constant) {
-                        newRowData.add(oldRowData.get(i));
-                    }
-                }
-                else if (operator.equals("!=")) {
-                    if (columnData.get(i) != constant) {
-                        newRowData.add(oldRowData.get(i));
-                    }
-                }
-                else {
-                    System.out.println("Error! The operator can only be '>', '<', " +
-                            "'=', '>=', '<=', or '!='. Please recheck.");
-                    return;
+                switch (operator) {
+                    case "<":
+                        if (columnData.get(i) < constant) {
+                            newRowData.add(oldRowData.get(i));
+                        }
+                        break;
+                    case ">":
+                        if (columnData.get(i) > constant) {
+                            newRowData.add(oldRowData.get(i));
+                        }
+                        break;
+                    case "=":
+                        if (columnData.get(i) == constant) {
+                            newRowData.add(oldRowData.get(i));
+                        }
+                        break;
+                    case "<=":
+                        if (columnData.get(i) <= constant) {
+                            newRowData.add(oldRowData.get(i));
+                        }
+                        break;
+                    case ">=":
+                        if (columnData.get(i) >= constant) {
+                            newRowData.add(oldRowData.get(i));
+                        }
+                        break;
+                    case "!=":
+                        if (columnData.get(i) != constant) {
+                            newRowData.add(oldRowData.get(i));
+                        }
+                        break;
+                    default:
+                        System.out.println("Error! The operator can only be '>', '<', " +
+                                "'=', '>=', '<=', or '!='. Please recheck.");
+                        return;
                 }
             }
             newTable.setRowData(newRowData);
@@ -344,40 +346,41 @@ public class DB {
             assert columnData1.size() == columnData2.size();
 
             for (int i = 0; i < columnData1.size(); i++) {
-                if (operator.equals("<")) {
-                    if (columnData1.get(i) < columnData2.get(i)) {
-                        newRowData.add(oldRowData.get(i));
-                    }
-                }
-                else if (operator.equals(">")) {
-                    if (columnData1.get(i) > columnData2.get(i)) {
-                        newRowData.add(oldRowData.get(i));
-                    }
-                }
-                else if (operator.equals("=")) {
-                    if (columnData1.get(i) == columnData2.get(i)) {
-                        newRowData.add(oldRowData.get(i));
-                    }
-                }
-                else if (operator.equals("<=")) {
-                    if (columnData1.get(i) <= columnData2.get(i)) {
-                        newRowData.add(oldRowData.get(i));
-                    }
-                }
-                else if (operator.equals(">=")) {
-                    if (columnData1.get(i) >= columnData2.get(i)) {
-                        newRowData.add(oldRowData.get(i));
-                    }
-                }
-                else if (operator.equals("!=")) {
-                    if (columnData1.get(i) != columnData2.get(i)) {
-                        newRowData.add(oldRowData.get(i));
-                    }
-                }
-                else {
-                    System.out.println("Error! The operator can only be '>', '<', " +
-                            "'=', '>=', '<=', or '!='. Please recheck.");
-                    return;
+                switch (operator) {
+                    case "<":
+                        if (columnData1.get(i) < columnData2.get(i)) {
+                            newRowData.add(oldRowData.get(i));
+                        }
+                        break;
+                    case ">":
+                        if (columnData1.get(i) > columnData2.get(i)) {
+                            newRowData.add(oldRowData.get(i));
+                        }
+                        break;
+                    case "=":
+                        if (columnData1.get(i) == columnData2.get(i)) {
+                            newRowData.add(oldRowData.get(i));
+                        }
+                        break;
+                    case "<=":
+                        if (columnData1.get(i) <= columnData2.get(i)) {
+                            newRowData.add(oldRowData.get(i));
+                        }
+                        break;
+                    case ">=":
+                        if (columnData1.get(i) >= columnData2.get(i)) {
+                            newRowData.add(oldRowData.get(i));
+                        }
+                        break;
+                    case "!=":
+                        if (columnData1.get(i) != columnData2.get(i)) {
+                            newRowData.add(oldRowData.get(i));
+                        }
+                        break;
+                    default:
+                        System.out.println("Error! The operator can only be '>', '<', " +
+                                "'=', '>=', '<=', or '!='. Please recheck.");
+                        return;
                 }
             }
             newTable.setRowData(newRowData);

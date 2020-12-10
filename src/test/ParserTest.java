@@ -43,7 +43,7 @@ public class ParserTest {
         System.out.println(condition.getOperand1());
         System.out.println(condition.getOperand2());
         System.out.println(condition.getOperator());
-        System.out.println(condition.getOperand2Int());
+//        System.out.println(condition.getOperand2Int());
     }
 
 }
