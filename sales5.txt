@@ -1,0 +1,5 @@
+saleid|itemid|customerid|storeid|time|qty|pricerange
+36|14|2|38|49|15|3
+784|90|182|97|46|31|3
+801|117|2|43|81|14|5
+905|79|119|81|67|44|5

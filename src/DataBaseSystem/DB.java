@@ -11,8 +11,8 @@ public class DB {
     //----------------
     // Attributes
     //----------------
-
     private LinkedHashMap<String, Table> tables;
+
 
     //----------------
     // Constructor(s)
@@ -33,10 +33,10 @@ public class DB {
         return this.tables;
     }
 
+
     //----------------
     // Other Methods
     //----------------
-
     public int getTableNum() {
         return getTables().size();
     }
@@ -230,11 +230,14 @@ public class DB {
     }
 
     /**
-     *
-     * @param parser used for parsing the command
+     * Calculate the moving summation or average value of certain column.
+     * @param parser used for parsing the command.
+     * @param mode either "avg" or "sum", "avg" means get the moving average
+     *             value of the target column, "sum" means get the moving
+     *             summation value of the target column.
      */
     public void movAvgOrSum(CommandParser parser, String mode)
-            throws NullPointerException, NumberFormatException{
+            throws NullPointerException, NumberFormatException {
         try {
             // Get the target column name and data.
             String columnName = parser.getArguments().get(1);
@@ -464,6 +467,67 @@ public class DB {
         }
     }
 
+    /**
+     *
+     * @param parser
+     */
+    public void sort(CommandParser parser) throws NullPointerException {
+        try {
+            // Get the target column name and data.
+            String columnName = parser.getArguments().get(1);
+            Table targetTable = getTableByName(parser.getArguments().get(0));
 
+            assert targetTable != null;
+            ArrayList<Integer> targetColumn = targetTable.getColumnData().get(columnName);
+
+            // Create a new table, set its column names.
+            String newName = parser.getTableName();
+            Table newTable = new Table(newName);
+            newTable.setColumnNames(targetTable.getColumnNames());
+
+            // Sort
+
+
+        }
+        catch (NullPointerException e) {
+            System.out.println("Sort command Error! The target tables " +
+                    "don't exist, please recheck carefully!");
+        }
+    }
+
+    /**
+     *
+     * @param parser
+     */
+    public void concat(CommandParser parser) throws NullPointerException {
+        try {
+            // Get two target tables.
+            Table targetTable1 = getTableByName(parser.getArguments().get(0));
+            Table targetTable2 = getTableByName(parser.getArguments().get(1));
+            assert targetTable1 != null;
+            assert targetTable2 != null;
+
+            // Generate a new table and initialize its table name and
+            // the column names.
+            Table newTable = new Table(parser.getTableName());
+            newTable.setColumnNames(targetTable1.getColumnNames());
+
+            // Append rows into the new table.
+            for (ArrayList<Integer> row : targetTable1.getRowData())
+                newTable.getRowData().add(row);
+            for (ArrayList<Integer> row : targetTable2.getRowData())
+                newTable.getRowData().add(row);
+
+            // Update corresponding columns.
+            newTable.updateColumnData();
+
+            // Add the new table to the current DB.
+            getTables().put(parser.getTableName(), newTable);
+        }
+        catch (NullPointerException e) {
+            System.out.println("Concat command Error! The target tables " +
+                    "don't exist, please recheck carefully!");
+        }
+    }
 
 }

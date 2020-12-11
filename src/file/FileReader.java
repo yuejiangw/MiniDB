@@ -97,7 +97,7 @@ public class FileReader {
         formatValue();
     }
 
-    public void readFile(String fileName) throws IOException {
+    public void readFile(String fileName) throws IOException, IndexOutOfBoundsException {
         File file = new File(fileName);
 
         try {
@@ -119,8 +119,15 @@ public class FileReader {
                 }
 //                System.out.println(line);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException e1) {
+            System.out.println("Error! Something is wrong when reading file! " +
+                    "Please recheck!");
+            e1.printStackTrace();
+        }
+        catch (IndexOutOfBoundsException e2) {
+            System.out.println("Error! There may be extra line feed in the target " +
+                    "file, please recheck!");
+            e2.printStackTrace();
         }
         formatValue();
     }

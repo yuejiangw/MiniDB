@@ -144,9 +144,12 @@ public class Table {
      * Be aware that we need to have row data and the column names first.
      */
     public void updateColumnData() {
+        // To avoid duplicate insertion, we should initialize column data first.
         setColumnData(new LinkedHashMap<>());
+
         int rowNumber = getRowData().size();
         int columnNumber = getColumnNames().size();
+
         for (int i = 0; i < columnNumber; i++) {
             String currentColumnName = getColumnNames().get(i);
             getColumnData().put(currentColumnName, new ArrayList<>());

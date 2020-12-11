@@ -89,6 +89,14 @@ public class Main {
                 long endTime = System.currentTimeMillis();
                 System.out.println("Execution time: " + (endTime - startTime) + "ms");
             }
+
+            // R8 := concat(R1, R2)
+            else if (commandParser.isConcat()) {
+                long startTime = System.currentTimeMillis();
+                dataBase.concat(commandParser);
+                long endTime = System.currentTimeMillis();
+                System.out.println("Execution time: " + (endTime - startTime) + "ms");
+            }
         }
     }
 }
