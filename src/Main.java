@@ -74,7 +74,21 @@ public class Main {
                 System.out.println("Execution time: " + (endTime - startTime) + "ms");
             }
 
-            // R6 :=
+            // R6 := movavg(R1, C1, k)
+            else if (commandParser.isMovAvg()) {
+                long startTime = System.currentTimeMillis();
+                dataBase.movAvgOrSum(commandParser, "avg");
+                long endTime = System.currentTimeMillis();
+                System.out.println("Execution time: " + (endTime - startTime) + "ms");
+            }
+
+            // R7 := movsum(R1, C1, k)
+            else if (commandParser.isMovSum()) {
+                long startTime = System.currentTimeMillis();
+                dataBase.movAvgOrSum(commandParser, "sum");
+                long endTime = System.currentTimeMillis();
+                System.out.println("Execution time: " + (endTime - startTime) + "ms");
+            }
         }
     }
 }

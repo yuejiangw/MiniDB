@@ -231,17 +231,71 @@ public class DB {
 
     /**
      *
-     * @param parser
+     * @param parser used for parsing the command
      */
-    public void movAvgOrSum(CommandParser parser, String mode) {
-        // Create a new table.
-        String newName = parser.getTableName();
-        Table newTable = new Table(newName);
+    public void movAvgOrSum(CommandParser parser, String mode)
+            throws NullPointerException, NumberFormatException{
+        try {
+            // Get the target column name and data.
+            String columnName = parser.getArguments().get(1);
+            ArrayList<Integer> targetColumn = getTargetColumnData(parser);
 
-        // Get the target column name and data.
-        String columnName = parser.getArguments().get(1);
-        ArrayList<Integer> targetColumn = getTargetColumnData(parser);
-        
+            // Create a new table, set its column name.
+            String newName = parser.getTableName();
+            Table newTable = new Table(newName);
+            String newColumnName = "mov" + mode + "(" + columnName + ")";
+            newTable.getColumnNames().add(newColumnName);
+
+            // Get the step length.
+            int k = Integer.parseInt(parser.getArguments().get(2));
+
+            // Calculate the moving average and the moving summation.
+            ArrayList<Integer> newColumnData = new ArrayList<>();
+            if (mode.equals("avg")) {
+                for (int i = 0; i < targetColumn.size(); i++) {
+                    int tmp = 0;
+                    if (i < k - 1) {
+                        for (int j = 0; j <= i; j++) {
+                            tmp += targetColumn.get(j);
+                        }
+                        newColumnData.add(tmp / (i + 1));
+                    }
+                    else {
+                        for (int j = i - k + 1; j <= i; j++) {
+                            tmp += targetColumn.get(j);
+                        }
+                        newColumnData.add(tmp / k);
+                    }
+                }
+            }
+            else if (mode.equals("sum")) {
+                for (int i = 0; i < targetColumn.size(); i++) {
+                    int tmp = 0;
+                    if (i < k - 1) {
+                        for (int j = 0; j <= i; j++) {
+                            tmp += targetColumn.get(j);
+                        }
+                    }
+                    else {
+                        for (int j = i - k + 1; j <= i; j++) {
+                            tmp += targetColumn.get(j);
+                        }
+                    }
+                    newColumnData.add(tmp);
+                }
+            }
+            newTable.getColumnData().put(newColumnName, newColumnData);
+            newTable.updateRowData(null);
+            getTables().put(newName, newTable);
+        }
+        catch (NullPointerException e1) {
+            System.out.println("Moving command Error! The target table or column " +
+                    "doesn't exist, please recheck carefully!");
+        }
+        catch (NumberFormatException e2) {
+            System.out.println("Moving command Error! The step length of the mov " +
+                    "commands must be integer, please recheck carefully!");
+        }
     }
 
     private ArrayList<Integer> getTargetColumnData(CommandParser parser) {
@@ -251,7 +305,6 @@ public class DB {
         assert targetTable != null;
         return targetTable.getColumnData().get(targetColumnName);
     }
-
 
 
 

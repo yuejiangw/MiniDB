@@ -44,6 +44,7 @@ public class ParserTest {
         System.out.println(condition.getOperand2());
         System.out.println(condition.getOperator());
 //        System.out.println(condition.getOperand2Int());
+        Integer.parseInt("hhhhh");
     }
 
 }
