@@ -74,7 +74,7 @@ public class Main {
                 System.out.println("Execution time: " + (endTime - startTime) + "ms");
             }
 
-            //
+            // R6 :=
         }
     }
 }

@@ -186,54 +186,74 @@ public class DB {
      *             target column, "sum" means get the summation value of the target
      *             column.
      */
-    public void avgOrSum(CommandParser parser, String mode) {
-        Table targetTable = getTableByName(parser.getArguments().get(0));
+    public void avgOrSum(CommandParser parser,
+                         String mode) throws NullPointerException {
+        try {
+            // Create a new table.
+            String newName = parser.getTableName();
+            Table newTable = new Table(newName);
 
-        // Check if the target table exists.
-        if (targetTable == null) {
-            System.out.println("Error! The target table doesn't exist, please " +
-                    "recheck carefully!");
-            return;
+            // Get the target column name and data.
+            String columnName = parser.getArguments().get(1);
+            ArrayList<Integer> targetColumn = getTargetColumnData(parser);
+
+
+            // Calculate the average/sum value of the column.
+            int sum = 0;
+            for (int columnValue : targetColumn)
+                sum += columnValue;
+            int avgValue = sum / targetColumn.size();
+
+            // Set column name and the corresponding data.
+            // Update the row data as well.
+            String newColumnName = mode + "(" + columnName + ")";
+            newTable.getColumnNames().add(newColumnName);
+            ArrayList<Integer> newColumnData = new ArrayList<>();
+
+            if (mode.equals("avg"))
+                newColumnData.add(avgValue);
+            else if (mode.equals("sum"))
+                newColumnData.add(sum);
+            else {
+                System.out.println("Error! Mode can only be avg or sum!");
+                return;
+            }
+
+            newTable.getColumnData().put(newColumnName, newColumnData);
+            newTable.updateRowData(null);
+            getTables().put(newName, newTable);
         }
+        catch (NullPointerException e) {
+            System.out.println("Error! The target table or column doesn't exist, " +
+                    "please recheck carefully!");
+        }
+    }
 
+    /**
+     *
+     * @param parser
+     */
+    public void movAvgOrSum(CommandParser parser, String mode) {
         // Create a new table.
         String newName = parser.getTableName();
         Table newTable = new Table(newName);
 
-        // Get the target column data.
+        // Get the target column name and data.
         String columnName = parser.getArguments().get(1);
-        ArrayList<Integer> targetColumn = targetTable.getColumnData().get(columnName);
-        if (targetColumn == null) {
-            System.out.println("Error! The target column doesn't exist, please " +
-                    "recheck carefully!");
-            return;
-        }
-
-        // Calculate the average/sum value of the column.
-        int sum = 0;
-        for (int columnValue : targetColumn)
-            sum += columnValue;
-        int avgValue = sum / targetColumn.size();
-
-        // Set column name and the corresponding data.
-        // Update the row data as well.
-        String newColumnName = mode + "(" + columnName + ")";
-        newTable.getColumnNames().add(newColumnName);
-        ArrayList<Integer> newColumnData = new ArrayList<>();
-
-        if (mode.equals("avg"))
-            newColumnData.add(avgValue);
-        else if (mode.equals("sum"))
-            newColumnData.add(sum);
-        else {
-            System.out.println("Error! Mode can only be avg or sum!");
-            return;
-        }
-
-        newTable.getColumnData().put(newColumnName, newColumnData);
-        newTable.updateRowData(null);
-        getTables().put(newName, newTable);
+        ArrayList<Integer> targetColumn = getTargetColumnData(parser);
+        
     }
+
+    private ArrayList<Integer> getTargetColumnData(CommandParser parser) {
+        String targetTableName = parser.getArguments().get(0);
+        Table targetTable = getTableByName(targetTableName);
+        String targetColumnName = parser.getArguments().get(1);
+        assert targetTable != null;
+        return targetTable.getColumnData().get(targetColumnName);
+    }
+
+
+
 
     /**
      * Select certain columns from the target table under the restriction of
@@ -390,5 +410,7 @@ public class DB {
             System.out.println("Error! The column name doesn't exist! Please recheck.");
         }
     }
+
+
 
 }
