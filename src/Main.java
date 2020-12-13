@@ -97,6 +97,15 @@ public class Main {
                 long endTime = System.currentTimeMillis();
                 System.out.println("Execution time: " + (endTime - startTime) + "ms");
             }
+
+            // R9 := sort(R1, C1)
+            else if (commandParser.isSort()) {
+                long startTime = System.currentTimeMillis();
+                dataBase.sort(commandParser);
+                long endTime = System.currentTimeMillis();
+                System.out.println("Execution time: " + (endTime - startTime) + "ms");
+            }
+
         }
     }
 }

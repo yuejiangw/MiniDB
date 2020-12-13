@@ -468,8 +468,9 @@ public class DB {
     }
 
     /**
+     * Sort the table based on the natural order of its certain column data.
      *
-     * @param parser
+     * @param parser used for parsing the command.
      */
     public void sort(CommandParser parser) throws NullPointerException {
         try {
@@ -485,9 +486,22 @@ public class DB {
             Table newTable = new Table(newName);
             newTable.setColumnNames(targetTable.getColumnNames());
 
-            // Sort
+            // Selection sort in the natural order.
+            ArrayList<ArrayList<Integer>> tmpRows =
+                    (ArrayList<ArrayList<Integer>>) targetTable.getRowData().clone();
+            ArrayList<Integer> tmpColumn = (ArrayList<Integer>) targetColumn.clone();
+            while (!tmpColumn.isEmpty()) {
+                int minIndex = tmpColumn.indexOf(getMin(tmpColumn));
+                newTable.getRowData().add(tmpRows.get(minIndex));
+                tmpColumn.remove(minIndex);
+                tmpRows.remove(minIndex);
+            }
 
+            // Update corresponding column data.
+            newTable.updateColumnData();
 
+            // Add the new table to the current DB.
+            getTables().put(parser.getTableName(), newTable);
         }
         catch (NullPointerException e) {
             System.out.println("Sort command Error! The target tables " +
@@ -495,9 +509,18 @@ public class DB {
         }
     }
 
+    private int getMin(ArrayList<Integer> a) {
+        double min = Double.POSITIVE_INFINITY;
+        for (int data : a)
+            if (data < min)
+                min = data;
+        return (int) min;
+    }
+
     /**
+     * Concatenate two tables in the order of columns.
      *
-     * @param parser
+     * @param parser used for parsing the command.
      */
     public void concat(CommandParser parser) throws NullPointerException {
         try {

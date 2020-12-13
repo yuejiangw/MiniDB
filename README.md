@@ -32,7 +32,7 @@
 |          |   sumgroup    |
 |          |   avggroup    |
 |          |     join      |
-|          |     sort      |
+|    y     |     sort      |
 |    y     |    movavg     |
 |    y     |    movsum     |
 |          |     Btree     |

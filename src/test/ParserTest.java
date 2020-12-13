@@ -50,6 +50,20 @@ public class ParserTest {
         a1.add(1);
         a2.add(2);
         System.out.println(a1.equals(a2));
+
+        ArrayList<Integer> a = new ArrayList<>();
+        a.add(1);
+        a.add(2);
+        a.add(3);
+        a.add(4);
+        System.out.println(getMin(a));
+    }
+    private static int getMin(ArrayList<Integer> a) {
+        double min = Double.POSITIVE_INFINITY;
+        for (int data : a)
+            if (data < min)
+                min = data;
+        return (int) min;
     }
 
 }
