@@ -553,4 +553,94 @@ public class DB {
         }
     }
 
+
+    public void sumOrAvgGroup(CommandParser parser, String mode) throws NullPointerException {
+        try {
+            // Get the target column name and data.
+            String columnName = parser.getArguments().get(1);
+            Table targetTable = getTableByName(parser.getArguments().get(0));
+
+            assert targetTable != null;
+            int targetColumnIndex = targetTable.getColumnNames().indexOf(columnName);
+            ArrayList<Integer> targetColumnData = targetTable.getColumnData().get(columnName);
+
+            // Get the column messages that will be grouped.
+            Table tmpGroupTable = new Table();
+
+            for (int i = 2; i < parser.getArguments().size(); i++) {
+
+                String groupColumnName = parser.getArguments().get(i);
+                ArrayList<Integer> groupColumnData = targetTable.getColumnData().get(groupColumnName);
+
+                tmpGroupTable.getColumnNames().add(groupColumnName);
+                tmpGroupTable.getColumnData().put(groupColumnName, groupColumnData);
+            }
+
+            // Update the row data of the temp group table.
+            tmpGroupTable.updateRowData(null);
+
+            // To organize the data into groups, we use LinkedHashSet to
+            // eliminate the duplicate column data.
+            LinkedHashSet<ArrayList<Integer>> groupsWithoutDuplicate = new LinkedHashSet<>(tmpGroupTable.getRowData());
+
+            LinkedHashMap<ArrayList<Integer>, ArrayList<Integer>> groupDivision = new LinkedHashMap<>();
+
+
+            for (ArrayList<Integer> group : groupsWithoutDuplicate) {
+                groupDivision.put(group, new ArrayList<>());
+            }
+
+            for (ArrayList<Integer> row : targetTable.getRowData()) {
+                ArrayList<Integer> currentRowGroup = new ArrayList<>();
+
+                // For current row, we organize the certain columns' data into a group.
+                for (String groupColumnName : tmpGroupTable.getColumnNames()) {
+                    int columnIndex = targetTable.getColumnNames().indexOf(groupColumnName);
+                    currentRowGroup.add(row.get(columnIndex));
+                }
+
+                groupDivision.get(currentRowGroup).add(row.get(targetColumnIndex));
+            }
+
+            // Create a new table.
+            Table newTable = new Table(parser.getTableName());
+
+            // Set the column name.
+            String firstColumnName = mode + "(" + columnName + ")";
+            newTable.getColumnNames().add(firstColumnName);
+            for (String name : tmpGroupTable.getColumnNames())
+                newTable.getColumnNames().add(name);
+
+            // Set the data.
+            int count = 0;
+            for (ArrayList<Integer> group : groupDivision.keySet()) {
+                ArrayList<Integer> tmpRow = (ArrayList<Integer>) group.clone();
+                if (mode.equals("sum")) {
+                    tmpRow.add(0, sumArrayList(groupDivision.get(group)));
+                }
+                else if (mode.equals("avg")) {
+                    int length = groupDivision.get(group).size();
+                    tmpRow.add(0, sumArrayList(groupDivision.get(group)) / length);
+                }
+                newTable.getRowData().add(tmpRow);
+            }
+
+            // Add the new table to the current DB.
+            getTables().put(parser.getTableName(), newTable);
+
+        }
+        catch (NullPointerException e) {
+            System.out.println("SumGroup or AvgGroup Error!");
+        }
+
+    }
+
+    private int sumArrayList(ArrayList<Integer> array) {
+        int result = 0;
+        for (int i : array) {
+            result += i;
+        }
+        return result;
+    }
+
 }

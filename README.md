@@ -29,8 +29,8 @@
 |    y     |    project    |
 |    y     |      sum      |
 |    y     |      avg      |
-|          |   sumgroup    |
-|          |   avggroup    |
+|    y     |   sumgroup    |
+|    y     |   avggroup    |
 |          |     join      |
 |    y     |     sort      |
 |    y     |    movavg     |
@@ -52,8 +52,8 @@ The possible commands are all specified in the assignment and my subsequent anno
 - R := sum(S, C1) : this is for "select sum(C1) from S;". This gives a single row table.
 - R := avg(S, C1) : this is for "select avg(C1) from S;". This gives a single row table.
 - R := sumgroup(S, C1, Clist), this is for "select Clist, sum(C1) from S group by Clist". The order of the rows in R can be arbitrary. 
-  - R := avggroup(S, C1, Clist), this is for "select Clist, avg(C1) from S group by Clist". The order of the rows in R can be arbitrary.
-  - T := join(R, S, JOIN_CONDITION) , where JOIN_CONDITION is of the form R.C1 COP S.C2, where R.C1 is a column of R and S.C2 is a column of S. **(Note that columns in join condition are alwasy prefixed with the table they belong to.)** The order of the rows in R can be arbitrary. 
+- R := avggroup(S, C1, Clist), this is for "select Clist, avg(C1) from S group by Clist". The order of the rows in R can be arbitrary.4
+- T := join(R, S, JOIN_CONDITION) , where JOIN_CONDITION is of the form R.C1 COP S.C2, where R.C1 is a column of R and S.C2 is a column of S. **(Note that columns in join condition are alwasy prefixed with the table they belong to.)** The order of the rows in R can be arbitrary. 
 - R := sort(S, C1), this is to sort S by C1 in increasing order (you may assume always a single column sort: **this is another simplification**) 
 - R := movavg(S, C1, k), this is to perform the k item moving average of S on column C1 (single column). The order of the rows in R is the same as that in S.
 - R := movsum(S, C1, k), this is to perform the k item moving sum of S on column C1 (single column). The order of the rows in R is the same as that in S.

@@ -106,6 +106,22 @@ public class Main {
                 System.out.println("Execution time: " + (endTime - startTime) + "ms");
             }
 
+            // R9 := sort(R1, C1)
+            else if (commandParser.isSumGroup()) {
+                long startTime = System.currentTimeMillis();
+                dataBase.sumOrAvgGroup(commandParser, "sum");
+                long endTime = System.currentTimeMillis();
+                System.out.println("Execution time: " + (endTime - startTime) + "ms");
+            }
+
+            // R9 := sort(R1, C1)
+            else if (commandParser.isAvgGroup()) {
+                long startTime = System.currentTimeMillis();
+                dataBase.sumOrAvgGroup(commandParser, "avg");
+                long endTime = System.currentTimeMillis();
+                System.out.println("Execution time: " + (endTime - startTime) + "ms");
+            }
+
         }
     }
 }
