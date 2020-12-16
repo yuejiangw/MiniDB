@@ -6,6 +6,7 @@ import Parser.*;
 
 import javax.rmi.ssl.SslRMIClientSocketFactory;
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.Scanner;
 
 public class Main {
@@ -13,6 +14,7 @@ public class Main {
         Scanner input = new Scanner(System.in);
         String command;
         DB dataBase = new DB();
+        LinkedHashMap<Integer, Integer> hashIndex = new LinkedHashMap<>();
 
         while (!(command = input.nextLine()).equals("exit")) {
 
@@ -106,7 +108,7 @@ public class Main {
                 System.out.println("Execution time: " + (endTime - startTime) + "ms");
             }
 
-            // R9 := sort(R1, C1)
+            // R10 := sumgroup(R1, C1, CList)
             else if (commandParser.isSumGroup()) {
                 long startTime = System.currentTimeMillis();
                 dataBase.sumOrAvgGroup(commandParser, "sum");
@@ -114,7 +116,7 @@ public class Main {
                 System.out.println("Execution time: " + (endTime - startTime) + "ms");
             }
 
-            // R9 := sort(R1, C1)
+            // R11 := avggroup(R1, C1, CList)
             else if (commandParser.isAvgGroup()) {
                 long startTime = System.currentTimeMillis();
                 dataBase.sumOrAvgGroup(commandParser, "avg");
@@ -122,6 +124,13 @@ public class Main {
                 System.out.println("Execution time: " + (endTime - startTime) + "ms");
             }
 
+            // Hash(R1, C1)
+            else if (commandParser.isHash()) {
+                long startTime = System.currentTimeMillis();
+                hashIndex = dataBase.hash(commandParser);
+                long endTime = System.currentTimeMillis();
+                System.out.println("Execution time: " + (endTime - startTime) + "ms");
+            }
         }
     }
 }

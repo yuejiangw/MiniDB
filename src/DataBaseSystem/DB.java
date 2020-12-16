@@ -3,6 +3,7 @@ package DataBaseSystem;
 import Parser.CommandParser;
 import Parser.OperationExpression;
 import file.FileReader;
+import file.FileWriter;
 
 import java.io.IOException;
 import java.util.*;
@@ -471,6 +472,7 @@ public class DB {
      * Sort the table based on the natural order of its certain column data.
      *
      * @param parser used for parsing the command.
+     * @throws NullPointerException
      */
     public void sort(CommandParser parser) throws NullPointerException {
         try {
@@ -553,7 +555,12 @@ public class DB {
         }
     }
 
-
+    /**
+     *
+     * @param parser
+     * @param mode
+     * @throws NullPointerException
+     */
     public void sumOrAvgGroup(CommandParser parser, String mode) throws NullPointerException {
         try {
             // Get the target column name and data.
@@ -641,6 +648,33 @@ public class DB {
             result += i;
         }
         return result;
+    }
+
+    public LinkedHashMap<Integer, Integer> hash(CommandParser parser) throws
+            NullPointerException, IOException {
+        try {
+            FileWriter.writeLog("hash");
+
+            // Get the target table and column data.
+            Table targetTable = getTableByName(parser.getArguments().get(0));
+            String targetColumnName = parser.getArguments().get(1);
+
+            assert targetTable != null;
+            ArrayList<Integer> columnData = targetTable.getColumnData().get(targetColumnName);
+
+            // Create hash index for the target column data.
+            LinkedHashMap<Integer, Integer> hashIndex = new LinkedHashMap<>();
+            for (int i = 0; i < columnData.size(); i++) {
+                hashIndex.put(columnData.get(i), i);
+            }
+            return hashIndex;
+
+        }
+        catch (NullPointerException e) {
+            System.out.println("Error! As for the hash command, the target table " +
+                    "or the column name may not exist!");
+        }
+        return null;
     }
 
 }

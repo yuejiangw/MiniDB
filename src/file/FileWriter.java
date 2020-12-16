@@ -1,6 +1,7 @@
 package file;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -66,6 +67,17 @@ public class FileWriter {
         }
         catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void writeLog(String str) throws IOException {
+        String logFileName = "log.txt";
+        File file = new File(logFileName);
+        try (BufferedWriter bw = new BufferedWriter(new java.io.FileWriter(file))) {
+            bw.write(str);
+        }
+        catch (IOException e) {
+            System.out.println("Something is wrong when writing log file.");
         }
     }
 }

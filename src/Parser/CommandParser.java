@@ -10,7 +10,7 @@ public class CommandParser {
 
     private final static String[] allCommands = {"inputfromfile", "outputtofile",
             "select", "project", "sum", "avg", "sumgroup", "avggroup", "join",
-            "sort", "movavg", "movsum", "Btree", "Hash", "concat", "showDB"};
+            "sort", "movavg", "movsum", "btree", "hash", "concat", "showDB"};
 
     private final static String[] allOperators = {">", "<", "=", "!=", ">=", "<="};
 
@@ -264,11 +264,11 @@ public class CommandParser {
     }
 
     public boolean isBtree() {
-        return this.getCommandName().equals("Btree");
+        return this.getCommandName().equals("btree");
     }
 
     public boolean isHash() {
-        return this.getCommandName().equals("Hash");
+        return this.getCommandName().equals("hash");
     }
 
     public boolean isConcat() {

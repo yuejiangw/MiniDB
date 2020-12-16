@@ -20,8 +20,11 @@ public class LinkedList {
         }
     }
     
-    // Attribute
+    /*
+     * Attribute
+     */
     private Node head;
+
 
     // Constructor
     public LinkedList() {
