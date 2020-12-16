@@ -36,7 +36,7 @@
 |    y     |    movavg     |
 |    y     |    movsum     |
 |          |     Btree     |
-|          |     Hash      |
+|    y     |     Hash      |
 |    y     |    concat     |
 |    y     | outputtofile  |
 

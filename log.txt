@@ -1,1 +1,6 @@
-hash
+hash	R1	itemid
+hash	R1	saleid
+
+
+
+

@@ -1,0 +1,8 @@
+R1 := inputfromfile(sales1.txt)
+R2 := inputfromfile(sales2.txt)
+outputtofile(R1, bar)
+outputtofile(R2, bar)
+R3 := join(R1, R2, R1.saleid < R2.saleid)
+outputtofile(R3)
+R4 := join(R1, R2, R1.saleid > R2.saleid)
+outputtofile(R4)

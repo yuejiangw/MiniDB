@@ -192,19 +192,21 @@ public class FileReader {
         }
     }
 
-    public static int readLog() throws IOException {
+    /**
+     * Read the log file that stores index message.
+     * 
+     * @return
+     * @throws IOException
+     */
+    public static String readLog() throws IOException {
         String logFileName = "log.txt";
         File file = new File(logFileName);
         try (BufferedReader br = new BufferedReader(new java.io.FileReader(file))) {
-            String line = br.readLine();
-            if (line.equals("hash"))
-                return 0;
-            else if (line.equals("btree"))
-                return 1;
+            return br.readLine();
         }
         catch (IOException e) {
             System.out.println("Something is wrong when reading log file.");
         }
-        return -1;
+        return null;
     }
 }

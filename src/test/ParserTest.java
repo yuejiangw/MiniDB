@@ -19,17 +19,34 @@ public class ParserTest {
         commands.add("Btree(R, C1)");
         commands.add("Hash(R, C2)");
         commands.add("outputtofile(filename)");
+//        commands.add();
 
         CommandParser commandParser = new CommandParser();
+        String c6 = "R3 := join(R1, R2, R1.saleid > R2.saleid)";
+        c6 = c6.replaceAll("\\s", "");
+        String strParenthesis = c6.split(":=")[1];
+        System.out.println(strParenthesis);
+        String commandName = strParenthesis.split("\\(")[0].toLowerCase();
+        String strArguments = strParenthesis.substring(commandName.length() + 1, strParenthesis.length() - 1);
+//        commandParser.parseCommand(c6);
+        System.out.println(strArguments);
+        String[] argumentsSplit = strArguments.split(",");
+        String targetTable1 = argumentsSplit[0];
+        String targetTable2 = argumentsSplit[1];
+        String condition = argumentsSplit[2];
+        System.out.println(targetTable1);
+        System.out.println(targetTable2);
+        System.out.println(condition);
+        System.out.println(condition.split("\\.").length);
 
-        for (int i = 0; i < commands.size(); i++) {
-            commandParser.parseCommand(commands.get(i));
-            System.out.println(commandParser.getTableName() + " " +
-                    commandParser.getCommandName());
-            for (int j = 0; j < commandParser.getArguments().size(); j++)
-                System.out.println(commandParser.getArguments().get(j));
-            System.out.println();
-        }
+//        for (int i = 0; i < commands.size(); i++) {
+//            commandParser.parseCommand(commands.get(i));
+//            System.out.println(commandParser.getTableName() + " " +
+//                    commandParser.getCommandName());
+//            for (int j = 0; j < commandParser.getArguments().size(); j++)
+//                System.out.println(commandParser.getArguments().get(j));
+//            System.out.println();
+//        }
 
 //        String command = "R2 := select(R1, saleid > 500)";
 //        String command = "R2 := select(R1, saleid > itemid)";
@@ -63,6 +80,7 @@ public class ParserTest {
 
 
     }
+
     private static int getMin(ArrayList<Integer> a) {
         double min = Double.POSITIVE_INFINITY;
         for (int data : a)

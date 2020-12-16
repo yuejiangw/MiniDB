@@ -1,27 +1,27 @@
 package hashTable;
 
 public class Info {
-    private int key;
-    private int value;
+    private String tableName;
+    private String columnName;
 
-    public Info(int k, int v) {
-        key = k;
-        value = v;
+    public Info(String t, String c) {
+        tableName = t;
+        columnName = c;
     }
 
-    public int getKey() {
-        return this.key;
+    public String getTableName() {
+        return tableName;
     }
 
-    public void setKey(int k) {
-        key = k;
-    }
-    
-    public int getValue() {
-        return this.value;
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
     }
 
-    public void setValue(int v) {
-        value = v;
+    public String getColumnName() {
+        return columnName;
+    }
+
+    public void setColumnName(String columnName) {
+        this.columnName = columnName;
     }
 }

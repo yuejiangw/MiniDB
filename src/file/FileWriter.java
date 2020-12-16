@@ -70,11 +70,16 @@ public class FileWriter {
         }
     }
 
+    /**
+     * Write
+     * @param str
+     * @throws IOException
+     */
     public static void writeLog(String str) throws IOException {
         String logFileName = "log.txt";
         File file = new File(logFileName);
-        try (BufferedWriter bw = new BufferedWriter(new java.io.FileWriter(file))) {
-            bw.write(str);
+        try (BufferedWriter bw = new BufferedWriter(new java.io.FileWriter(file, true))) {
+            bw.write(str+"\n");
         }
         catch (IOException e) {
             System.out.println("Something is wrong when writing log file.");

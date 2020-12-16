@@ -4,7 +4,6 @@ import file.*;
 import hashTable.*;
 import Parser.*;
 
-import javax.rmi.ssl.SslRMIClientSocketFactory;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Scanner;
@@ -14,6 +13,7 @@ public class Main {
         Scanner input = new Scanner(System.in);
         String command;
         DB dataBase = new DB();
+        HashTable hashTable = new HashTable();
         LinkedHashMap<Integer, Integer> hashIndex = new LinkedHashMap<>();
 
         while (!(command = input.nextLine()).equals("exit")) {
@@ -71,7 +71,7 @@ public class Main {
             // R5 := select(R1, CONDITION)
             else if (commandParser.isSelect()) {
                 long startTime = System.currentTimeMillis();
-                dataBase.select(commandParser);
+                dataBase.select(commandParser, hashTable);
                 long endTime = System.currentTimeMillis();
                 System.out.println("Execution time: " + (endTime - startTime) + "ms");
             }
@@ -124,13 +124,25 @@ public class Main {
                 System.out.println("Execution time: " + (endTime - startTime) + "ms");
             }
 
-            // Hash(R1, C1)
-            else if (commandParser.isHash()) {
+            // R12 := join(R1, R2, R1.C1 > R2.C2)
+            else if (commandParser.isJoin()) {
                 long startTime = System.currentTimeMillis();
-                hashIndex = dataBase.hash(commandParser);
+                dataBase.join(commandParser);
                 long endTime = System.currentTimeMillis();
                 System.out.println("Execution time: " + (endTime - startTime) + "ms");
             }
+
+            // Hash(R1, C1)
+            else if (commandParser.isHash()) {
+                long startTime = System.currentTimeMillis();
+                dataBase.hash(commandParser, hashTable);
+                long endTime = System.currentTimeMillis();
+                System.out.println("Execution time: " + (endTime - startTime) + "ms");
+            }
+
         }
+
+        // When exist the program, the log file should be cleared.
+        FileWriter.writeLog("");
     }
 }

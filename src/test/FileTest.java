@@ -5,6 +5,7 @@ import file.FileReader;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 public class FileTest {
     public static void main (String[] args) throws IOException {
@@ -75,8 +76,23 @@ public class FileTest {
 
         tbl.outputFile(testFileName);
 
+        LinkedHashMap<Integer, Integer> hashMap = new LinkedHashMap<>();
+        hashMap.put(2, 1);
+        hashMap.put(2, 5);
+        hashMap.put(2, 6);
+        System.out.println(hashMap.get(2));
 
+        ArrayList<Integer> a1 = new ArrayList<>();
+        ArrayList<Integer> a2 = new ArrayList<>();
+        ArrayList<Integer> a3 = new ArrayList<>();
 
+        a1.add(1); a1.add(2); a1.add(3);
+        a2.add(4); a2.add(5); a2.add(6);
+
+        a3.addAll(a1);
+        a3.addAll(a2);
+
+        showArray(a3);
     }
 
     public static void showArray(ArrayList<Integer> a) {

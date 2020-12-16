@@ -18,7 +18,7 @@ public class CommandParser {
     private String tableName;
     private String commandName;
     private ArrayList<String> arguments;
-    private OperationExpression selectCondition;
+    private OperationExpression condition;
 
 
     //----------------
@@ -29,7 +29,7 @@ public class CommandParser {
         tableName = null;
         commandName = null;
         arguments = new ArrayList<>();
-        selectCondition = null;
+        condition = null;
     }
 
 
@@ -66,11 +66,11 @@ public class CommandParser {
     }
 
     public OperationExpression getCondition() {
-        return selectCondition;
+        return condition;
     }
 
     public void setCondition(OperationExpression condition) {
-        this.selectCondition = condition;
+        this.condition = condition;
     }
 
     //----------------
@@ -89,6 +89,18 @@ public class CommandParser {
         if (!command.contains(":=") && !command.contains("(") && !command.contains(")"))
             return isValidCommand(command);
         return false;
+    }
+
+    private void parseJoinCommand(String strArguments) {
+        String[] argumentsSplit = strArguments.split(",");
+        String targetTable1 = argumentsSplit[0];
+        String targetTable2 = argumentsSplit[1];
+        String condition = argumentsSplit[2];
+        getArguments().add(targetTable1);
+        getArguments().add(targetTable2);
+
+        parseOperator(condition);
+        parseOperands(condition, getCondition());
     }
 
     /**
@@ -199,12 +211,19 @@ public class CommandParser {
         String strArguments = strParenthesis.substring(
                 getCommandName().length() + 1, strParenthesis.length() - 1);
 
-        // The format of the "select" command is special,
+        // The format of the "select" and "join" command is special,
         // we need to deal with it separately.
         if (isSelect()) {
             setCondition(new OperationExpression());
             parseSelectCommand(strArguments);
             getCondition().formalType();
+            return;
+        }
+
+        if (isJoin()) {
+            setCondition(new OperationExpression());
+            parseJoinCommand(strArguments);
+            return;
         }
 
         String[] argumentsSplit = strArguments.split(",");

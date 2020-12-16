@@ -4,8 +4,11 @@ import Parser.CommandParser;
 import Parser.OperationExpression;
 import file.FileReader;
 import file.FileWriter;
+import hashTable.HashTable;
+import hashTable.Info;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class DB {
@@ -310,6 +313,107 @@ public class DB {
         return targetTable.getColumnData().get(targetColumnName);
     }
 
+    /**
+     * Join two tables based on the join condition.
+     * @param parser
+     * @throws NullPointerException
+     */
+    public void join(CommandParser parser) throws NullPointerException {
+        try {
+            // Get essential message.
+            String newName = parser.getTableName();
+            Table newTable = new Table(newName);
+            String targetTable1Name = parser.getArguments().get(0);
+            String targetTable2Name = parser.getArguments().get(1);
+            Table targetTable1 = getTableByName(targetTable1Name);
+            Table targetTable2 = getTableByName(targetTable2Name);
+
+            // Update the column names of the new table.
+            assert targetTable1 != null;
+            assert targetTable2 != null;
+            for (String name : targetTable1.getColumnNames()) {
+                newTable.getColumnNames().add(targetTable1Name + "_" + name);
+            }
+            for (String name : targetTable2.getColumnNames()) {
+                newTable.getColumnNames().add(targetTable2Name + "_" + name);
+            }
+
+            // Get the join condition.
+            OperationExpression condition = parser.getCondition();
+            String table1 = condition.getOperand1().split("\\.")[0];
+            String column1 = condition.getOperand1().split("\\.")[1];
+            String table2 = condition.getOperand2().split("\\.")[0];
+            String column2 = condition.getOperand2().split("\\.")[1];
+            String operator = condition.getOperator();
+            ArrayList<Integer> columnData1 = getTableByName(table1).getColumnData().get(column1);
+            ArrayList<Integer> columnData2 = getTableByName(table2).getColumnData().get(column2);
+
+            // Parse the operator
+            ArrayList<ArrayList<Integer>> newRowData = new ArrayList<>();
+            ArrayList<ArrayList<Integer>> oldRowData1 = targetTable1.getRowData();
+            ArrayList<ArrayList<Integer>> oldRowData2 = targetTable2.getRowData();
+
+            int length = Math.min(columnData1.size(), columnData2.size());
+            for (int i = 0; i < length; i++) {
+                ArrayList<Integer> currentRow = new ArrayList<>();
+                switch (operator) {
+                    case "<":
+                        if (columnData1.get(i) < columnData2.get(i)) {
+//                            currentRow.addAll(oldRowData1.get(i));
+//                            currentRow.addAll(oldRowData2.get(i));
+//                            newRowData.add(currentRow);
+                            updateNewRowData(newRowData, oldRowData1,
+                                    oldRowData2, currentRow, i);
+                        }
+                        break;
+                    case ">":
+                        if (columnData1.get(i) > columnData2.get(i)) {
+                            updateNewRowData(newRowData, oldRowData1,
+                                    oldRowData2, currentRow, i);                        }
+                        break;
+                    case "=":
+                        if (columnData1.get(i) == columnData2.get(i)) {
+                            updateNewRowData(newRowData, oldRowData1,
+                                    oldRowData2, currentRow, i);                        }
+                        break;
+                    case "<=":
+                        if (columnData1.get(i) <= columnData2.get(i)) {
+                            updateNewRowData(newRowData, oldRowData1,
+                                    oldRowData2, currentRow, i);                        }
+                        break;
+                    case ">=":
+                        if (columnData1.get(i) >= columnData2.get(i)) {
+                            updateNewRowData(newRowData, oldRowData1,
+                                    oldRowData2, currentRow, i);                        }
+                        break;
+                    case "!=":
+                        if (columnData1.get(i) != columnData2.get(i)) {
+                            updateNewRowData(newRowData, oldRowData1,
+                                    oldRowData2, currentRow, i);                        }
+                        break;
+                    default:
+                        System.out.println("Error! The operator can only be '>', '<', " +
+                                "'=', '>=', '<=', or '!='. Please recheck.");
+                        return;
+                }
+            }
+            newTable.setRowData(newRowData);
+            newTable.updateColumnData();
+            getTables().put(newName, newTable);
+        }
+        catch (NullPointerException e) {
+            System.out.println("Join Error! No such table, please recheck.");
+        }
+    }
+
+    private void updateNewRowData(ArrayList<ArrayList<Integer>> newRowData,
+                                  ArrayList<ArrayList<Integer>> oldRowData1,
+                                  ArrayList<ArrayList<Integer>> oldRowData2,
+                                  ArrayList<Integer> currentRow, int i) {
+        currentRow.addAll(oldRowData1.get(i));
+        currentRow.addAll(oldRowData2.get(i));
+        newRowData.add(currentRow);
+    }
 
 
     /**
@@ -317,7 +421,7 @@ public class DB {
      * some conditions.
      * @param parser used for parsing the command.
      */
-    public void select(CommandParser parser) {
+    public void select(CommandParser parser, HashTable hashTable) {
         Table targetTable = getTableByName(parser.getArguments().get(0));
 
         // Check if the target table exists.
@@ -339,14 +443,14 @@ public class DB {
             int constant = Integer.parseInt(condition.getOperand1());
             String columnName = condition.getOperand2();
             selectByConstant(targetTable, newTable, columnName,
-                    condition.getOperator(), constant);
+                    condition.getOperator(), constant, hashTable);
         }
         // Operand 2 is an integer
         else if (condition.isOperand2Int()) {
             int constant = Integer.parseInt(condition.getOperand2());
             String columnName = condition.getOperand1();
             selectByConstant(targetTable, newTable, columnName,
-                    condition.getOperator(), constant);
+                    condition.getOperator(), constant, hashTable);
         }
         // Operand 1 and operand 2 are two column names
         else {
@@ -360,11 +464,27 @@ public class DB {
 
     private void selectByConstant(Table targetTable, Table newTable,
                                   String columnName, String operator,
-                                  int constant) throws NullPointerException {
+                                  int constant, HashTable hashTable)
+            throws NullPointerException {
         try {
             ArrayList<Integer> columnData = targetTable.getColumnData().get(columnName);
             ArrayList<ArrayList<Integer>> oldRowData = targetTable.getRowData();
             ArrayList<ArrayList<Integer>> newRowData = new ArrayList<>();
+
+            Info info = new Info(targetTable.getTableName(), columnName);
+            if (hashTable.getHashTables().containsKey(info)) {
+                System.out.println("We are using hash index now.");
+                Integer index = hashTable.getHashTables().get(info).get(constant);
+                if (index == null) {
+                    System.out.println("Sorry, there is no such value!");
+                    return;
+                }
+                newRowData.add(oldRowData.get(index));
+                newTable.setRowData(newRowData);
+                newTable.updateColumnData();
+                return;
+            }
+
             for (int i = 0; i < columnData.size(); i++) {
                 switch (operator) {
                     case "<":
@@ -378,6 +498,7 @@ public class DB {
                         }
                         break;
                     case "=":
+//                        System.out.println("No index.");
                         if (columnData.get(i) == constant) {
                             newRowData.add(oldRowData.get(i));
                         }
@@ -650,31 +771,44 @@ public class DB {
         return result;
     }
 
-    public LinkedHashMap<Integer, Integer> hash(CommandParser parser) throws
+    /**
+     * Add hash index on certain column of a table.
+     * @param parser
+     * @return
+     * @throws NullPointerException
+     * @throws IOException
+     */
+    public void hash(CommandParser parser, HashTable hashTable) throws
             NullPointerException, IOException {
         try {
-            FileWriter.writeLog("hash");
 
             // Get the target table and column data.
-            Table targetTable = getTableByName(parser.getArguments().get(0));
-            String targetColumnName = parser.getArguments().get(1);
-
+            String targetTableName = parser.getArguments().get(0);
+            Table targetTable = getTableByName(targetTableName);
             assert targetTable != null;
+
+            String targetColumnName = parser.getArguments().get(1);
             ArrayList<Integer> columnData = targetTable.getColumnData().get(targetColumnName);
+
+            // Write logs
+            // Format: hash tableName   columnName
+            FileWriter.writeLog("hash\t" + targetTableName + "\t" + targetColumnName);
 
             // Create hash index for the target column data.
             LinkedHashMap<Integer, Integer> hashIndex = new LinkedHashMap<>();
             for (int i = 0; i < columnData.size(); i++) {
                 hashIndex.put(columnData.get(i), i);
             }
-            return hashIndex;
+
+            // Update hashTables.
+            Info info = new Info(targetTableName, targetColumnName);
+            hashTable.getHashTables().put(info, hashIndex);
 
         }
         catch (NullPointerException e) {
             System.out.println("Error! As for the hash command, the target table " +
                     "or the column name may not exist!");
         }
-        return null;
     }
 
 }
