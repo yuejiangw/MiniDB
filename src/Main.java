@@ -24,12 +24,12 @@ public class Main {
         LinkedHashMap<Integer, Integer> hashIndex = new LinkedHashMap<>();
 
         try {
-            while ((command = br.readLine()) != null) {
-                if (command.equals(""))
-                    continue;
+//            while ((command = br.readLine()) != null) {
+//                if (command.equals(""))
+//                    continue;
 
 
-//            while (!(command = input.nextLine()).equals("exit")) {
+            while (!(command = input.nextLine()).equals("exit")) {
 
                 // showDB
                 if (command.equals("showDB")) {
@@ -109,7 +109,7 @@ public class Main {
                     long startTime = System.currentTimeMillis();
                     dataBase.movAvgOrSum(commandParser, "sum");
                     long endTime = System.currentTimeMillis();
-                    System.out.println("Sum Command Execution time: " +
+                    System.out.println("MovSum Command Execution time: " +
                             (endTime - startTime) + "ms");
                 }
 

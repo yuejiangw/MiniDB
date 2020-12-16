@@ -250,8 +250,15 @@ public class DB {
             // Create a new table, set its column name.
             String newName = parser.getTableName();
             Table newTable = new Table(newName);
+
+            Table targetTable = getTableByName(parser.getArguments().get(0));
+            newTable.setColumnNames((ArrayList<String>) targetTable.getColumnNames().clone());
+            newTable.setColumnData((LinkedHashMap<String, ArrayList<Integer>>)
+                    targetTable.getColumnData().clone()
+            );
+
             String newColumnName = "mov" + mode + "(" + columnName + ")";
-            newTable.getColumnNames().add(newColumnName);
+//            newTable.getColumnNames().add(newColumnName);
 
             // Get the step length.
             int k = Integer.parseInt(parser.getArguments().get(2));
@@ -291,7 +298,10 @@ public class DB {
                     newColumnData.add(tmp);
                 }
             }
-            newTable.getColumnData().put(newColumnName, newColumnData);
+
+            newTable.getColumnData().put(columnName, newColumnData);
+
+//            newTable.getColumnData().put(newColumnName, newColumnData);
             newTable.updateRowData(null);
             getTables().put(newName, newTable);
         }
