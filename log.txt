@@ -4,3 +4,28 @@ hash	R1	saleid
 
 
 
+hash	S0h	pricerange
+hash	S1h	pricerange
+hash	S0hb	pricerange
+hash	S1hb	pricerange
+hash	S0b	pricerange
+hash	S1b	pricerange
+hash	S0hb	pricerange
+hash	S1hb	pricerange
+
+hash	S0h	pricerange
+hash	S1h	pricerange
+hash	S0hb	pricerange
+hash	S1hb	pricerange
+hash	S0b	pricerange
+hash	S1b	pricerange
+hash	S0hb	pricerange
+hash	S1hb	pricerange
+hash	S0h	pricerange
+hash	S1h	pricerange
+hash	S0hb	pricerange
+hash	S1hb	pricerange
+hash	S0b	pricerange
+hash	S1b	pricerange
+hash	S0hb	pricerange
+hash	S1hb	pricerange

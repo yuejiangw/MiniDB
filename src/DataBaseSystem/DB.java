@@ -2,13 +2,13 @@ package DataBaseSystem;
 
 import Parser.CommandParser;
 import Parser.OperationExpression;
+import bPlusTree.BplusTree;
 import file.FileReader;
 import file.FileWriter;
 import hashTable.HashTable;
 import hashTable.Info;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class DB {
@@ -359,37 +359,39 @@ public class DB {
                 switch (operator) {
                     case "<":
                         if (columnData1.get(i) < columnData2.get(i)) {
-//                            currentRow.addAll(oldRowData1.get(i));
-//                            currentRow.addAll(oldRowData2.get(i));
-//                            newRowData.add(currentRow);
                             updateNewRowData(newRowData, oldRowData1,
-                                    oldRowData2, currentRow, i);
+                                    oldRowData2, i);
                         }
                         break;
                     case ">":
                         if (columnData1.get(i) > columnData2.get(i)) {
                             updateNewRowData(newRowData, oldRowData1,
-                                    oldRowData2, currentRow, i);                        }
+                                    oldRowData2, i);
+                        }
                         break;
                     case "=":
                         if (columnData1.get(i) == columnData2.get(i)) {
                             updateNewRowData(newRowData, oldRowData1,
-                                    oldRowData2, currentRow, i);                        }
+                                    oldRowData2, i);
+                        }
                         break;
                     case "<=":
                         if (columnData1.get(i) <= columnData2.get(i)) {
                             updateNewRowData(newRowData, oldRowData1,
-                                    oldRowData2, currentRow, i);                        }
+                                    oldRowData2, i);
+                        }
                         break;
                     case ">=":
                         if (columnData1.get(i) >= columnData2.get(i)) {
                             updateNewRowData(newRowData, oldRowData1,
-                                    oldRowData2, currentRow, i);                        }
+                                    oldRowData2, i);
+                        }
                         break;
                     case "!=":
                         if (columnData1.get(i) != columnData2.get(i)) {
                             updateNewRowData(newRowData, oldRowData1,
-                                    oldRowData2, currentRow, i);                        }
+                                    oldRowData2, i);
+                        }
                         break;
                     default:
                         System.out.println("Error! The operator can only be '>', '<', " +
@@ -409,7 +411,8 @@ public class DB {
     private void updateNewRowData(ArrayList<ArrayList<Integer>> newRowData,
                                   ArrayList<ArrayList<Integer>> oldRowData1,
                                   ArrayList<ArrayList<Integer>> oldRowData2,
-                                  ArrayList<Integer> currentRow, int i) {
+                                  int i) {
+        ArrayList<Integer> currentRow = new ArrayList<>();
         currentRow.addAll(oldRowData1.get(i));
         currentRow.addAll(oldRowData2.get(i));
         newRowData.add(currentRow);
@@ -470,20 +473,6 @@ public class DB {
             ArrayList<Integer> columnData = targetTable.getColumnData().get(columnName);
             ArrayList<ArrayList<Integer>> oldRowData = targetTable.getRowData();
             ArrayList<ArrayList<Integer>> newRowData = new ArrayList<>();
-
-            Info info = new Info(targetTable.getTableName(), columnName);
-            if (hashTable.getHashTables().containsKey(info)) {
-                System.out.println("We are using hash index now.");
-                Integer index = hashTable.getHashTables().get(info).get(constant);
-                if (index == null) {
-                    System.out.println("Sorry, there is no such value!");
-                    return;
-                }
-                newRowData.add(oldRowData.get(index));
-                newTable.setRowData(newRowData);
-                newTable.updateColumnData();
-                return;
-            }
 
             for (int i = 0; i < columnData.size(); i++) {
                 switch (operator) {
@@ -792,7 +781,7 @@ public class DB {
 
             // Write logs
             // Format: hash tableName   columnName
-            FileWriter.writeLog("hash\t" + targetTableName + "\t" + targetColumnName);
+//            FileWriter.writeLog("hash\t" + targetTableName + "\t" + targetColumnName);
 
             // Create hash index for the target column data.
             LinkedHashMap<Integer, Integer> hashIndex = new LinkedHashMap<>();
@@ -806,7 +795,27 @@ public class DB {
 
         }
         catch (NullPointerException e) {
-            System.out.println("Error! As for the hash command, the target table " +
+            System.out.println("Error! For the hash command, the target table " +
+                    "or the column name may not exist!");
+        }
+    }
+
+    public void bTree(CommandParser parser) throws NullPointerException {
+        BplusTree<Integer, Integer> tree = new BplusTree<>(5);
+
+        try {
+            // Get the target table and column data.
+            String targetTableName = parser.getArguments().get(0);
+            Table targetTable = getTableByName(targetTableName);
+            assert targetTable != null;
+
+            String targetColumnName = parser.getArguments().get(1);
+            ArrayList<Integer> columnData = targetTable.getColumnData().get(targetColumnName);
+            for (int i = 0; i < columnData.size(); i++) {
+                tree.insertOrUpdate(i, columnData.get(i));
+            }
+        } catch (NullPointerException e) {
+            System.out.println("Error! For the BTree command, the target table " +
                     "or the column name may not exist!");
         }
     }

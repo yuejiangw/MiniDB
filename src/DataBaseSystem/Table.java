@@ -212,6 +212,7 @@ public class Table {
      * Show current table.
      */
     public void showTable() {
+        System.out.println();
         for (int i = 0; i < getColumnNames().size(); i++) {
             System.out.print(getColumnNames().get(i));
             if (i < getColumnNames().size() - 1)

@@ -95,7 +95,7 @@ public class CommandParser {
         String[] argumentsSplit = strArguments.split(",");
         String targetTable1 = argumentsSplit[0];
         String targetTable2 = argumentsSplit[1];
-        String condition = argumentsSplit[2];
+        String condition = argumentsSplit[2 ];
         getArguments().add(targetTable1);
         getArguments().add(targetTable2);
 
@@ -211,8 +211,8 @@ public class CommandParser {
         String strArguments = strParenthesis.substring(
                 getCommandName().length() + 1, strParenthesis.length() - 1);
 
-        // The format of the "select" and "join" command is special,
-        // we need to deal with it separately.
+        // The format of the "select" and "join" commands is special,
+        // we need to deal with them separately.
         if (isSelect()) {
             setCondition(new OperationExpression());
             parseSelectCommand(strArguments);
@@ -233,9 +233,6 @@ public class CommandParser {
             getArguments().add(s);
         }
     }
-
-
-
 
 
     public boolean isInputFromFile() {

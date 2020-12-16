@@ -31,11 +31,11 @@
 |    y     |      avg      |
 |    y     |   sumgroup    |
 |    y     |   avggroup    |
-|          |     join      |
+|    y     |     join      |
 |    y     |     sort      |
 |    y     |    movavg     |
 |    y     |    movsum     |
-|          |     Btree     |
+|    y     |     Btree     |
 |    y     |     Hash      |
 |    y     |    concat     |
 |    y     | outputtofile  |
