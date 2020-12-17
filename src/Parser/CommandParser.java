@@ -182,8 +182,8 @@ public class CommandParser {
      */
     public void parseCommand(String str) {
 
-        // Delete all the spaces
-        str = str.replaceAll("\\s", "");
+        // Delete all the spaces, and the commands entered are case agnostic.
+        str = str.replaceAll("\\s", "").toLowerCase();
         String[] strSplit = str.split(":=");
         String strParenthesis = null;
 
@@ -198,9 +198,8 @@ public class CommandParser {
             strParenthesis = strSplit[0];
         }
 
-        // The commands entered are case agnostic.
         assert strParenthesis != null;
-        setCommandName(strParenthesis.split("\\(")[0].toLowerCase());
+        setCommandName(strParenthesis.split("\\(")[0]);
 
         // To judge whether the input command is valid.
         if (!isValidCommand(getCommandName())) {

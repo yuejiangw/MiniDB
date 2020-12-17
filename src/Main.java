@@ -35,7 +35,6 @@ public class Main {
                 // showDB
                 if (command.equals("showDB")) {
                     dataBase.getDBMessage();
-                    continue;
                 }
 
                 CommandParser commandParser = new CommandParser();
