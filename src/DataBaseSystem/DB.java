@@ -363,52 +363,54 @@ public class DB {
             ArrayList<ArrayList<Integer>> oldRowData1 = targetTable1.getRowData();
             ArrayList<ArrayList<Integer>> oldRowData2 = targetTable2.getRowData();
 
-            int length = Math.min(columnData1.size(), columnData2.size());
-            for (int i = 0; i < length; i++) {
-                ArrayList<Integer> currentRow = new ArrayList<>();
-                switch (operator) {
-                    case "<":
-                        if (columnData1.get(i) < columnData2.get(i)) {
-                            updateNewRowData(newRowData, oldRowData1,
-                                    oldRowData2, i);
-                        }
-                        break;
-                    case ">":
-                        if (columnData1.get(i) > columnData2.get(i)) {
-                            updateNewRowData(newRowData, oldRowData1,
-                                    oldRowData2, i);
-                        }
-                        break;
-                    case "=":
-                        if (columnData1.get(i) == columnData2.get(i)) {
-                            updateNewRowData(newRowData, oldRowData1,
-                                    oldRowData2, i);
-                        }
-                        break;
-                    case "<=":
-                        if (columnData1.get(i) <= columnData2.get(i)) {
-                            updateNewRowData(newRowData, oldRowData1,
-                                    oldRowData2, i);
-                        }
-                        break;
-                    case ">=":
-                        if (columnData1.get(i) >= columnData2.get(i)) {
-                            updateNewRowData(newRowData, oldRowData1,
-                                    oldRowData2, i);
-                        }
-                        break;
-                    case "!=":
-                        if (columnData1.get(i) != columnData2.get(i)) {
-                            updateNewRowData(newRowData, oldRowData1,
-                                    oldRowData2, i);
-                        }
-                        break;
-                    default:
-                        System.out.println("Error! The operator can only be '>', '<', " +
-                                "'=', '>=', '<=', or '!='. Please recheck.");
-                        return;
+            // Get cartesian product of the two tables.
+            for (int i = 0; i < columnData1.size(); i++) {
+                for (int j = 0; j < columnData2.size(); j++) {
+                    switch (operator) {
+                        case "<":
+                            if (columnData1.get(i) < columnData2.get(j)) {
+                                updateNewRowData(newRowData, oldRowData1,
+                                        oldRowData2, i, j);
+                            }
+                            break;
+                        case ">":
+                            if (columnData1.get(i) > columnData2.get(j)) {
+                                updateNewRowData(newRowData, oldRowData1,
+                                        oldRowData2, i, j);
+                            }
+                            break;
+                        case "=":
+                            if (columnData1.get(i) == columnData2.get(j)) {
+                                updateNewRowData(newRowData, oldRowData1,
+                                        oldRowData2, i, j);
+                            }
+                            break;
+                        case "<=":
+                            if (columnData1.get(i) <= columnData2.get(i)) {
+                                updateNewRowData(newRowData, oldRowData1,
+                                        oldRowData2, i, j);
+                            }
+                            break;
+                        case ">=":
+                            if (columnData1.get(i) >= columnData2.get(i)) {
+                                updateNewRowData(newRowData, oldRowData1,
+                                        oldRowData2, i, j);
+                            }
+                            break;
+                        case "!=":
+                            if (columnData1.get(i) != columnData2.get(i)) {
+                                updateNewRowData(newRowData, oldRowData1,
+                                        oldRowData2, i, j);
+                            }
+                            break;
+                        default:
+                            System.out.println("Error! The operator can only be '>', '<', " +
+                                    "'=', '>=', '<=', or '!='. Please recheck.");
+                            return;
+                    }
                 }
             }
+
             newTable.setRowData(newRowData);
             newTable.updateColumnData();
             getTables().put(newName, newTable);
@@ -418,13 +420,23 @@ public class DB {
         }
     }
 
+    /**
+     * First organize the ith row of oldRowData1 and the jth row of oldRowData2
+     * into a new row, and then add the new row to the newRowData.
+     *
+     * @param newRowData the result new rows.
+     * @param oldRowData1 target rows1
+     * @param oldRowData2 target rows2
+     * @param i column index of target rows1
+     * @param j column index of target row2
+     */
     private void updateNewRowData(ArrayList<ArrayList<Integer>> newRowData,
                                   ArrayList<ArrayList<Integer>> oldRowData1,
                                   ArrayList<ArrayList<Integer>> oldRowData2,
-                                  int i) {
+                                  int i, int j) {
         ArrayList<Integer> currentRow = new ArrayList<>();
         currentRow.addAll(oldRowData1.get(i));
-        currentRow.addAll(oldRowData2.get(i));
+        currentRow.addAll(oldRowData2.get(j));
         newRowData.add(currentRow);
     }
 
@@ -710,9 +722,8 @@ public class DB {
             // eliminate the duplicate column data.
             LinkedHashSet<ArrayList<Integer>> groupsWithoutDuplicate = new LinkedHashSet<>(tmpGroupTable.getRowData());
 
+            // The HashMap represents for each group and the corresponding target column values.
             LinkedHashMap<ArrayList<Integer>, ArrayList<Integer>> groupDivision = new LinkedHashMap<>();
-
-
             for (ArrayList<Integer> group : groupsWithoutDuplicate) {
                 groupDivision.put(group, new ArrayList<>());
             }
@@ -726,28 +737,30 @@ public class DB {
                     currentRowGroup.add(row.get(columnIndex));
                 }
 
+                // The currentRowGroup is a key, and we add corresponding column value
+                // to the right group.
                 groupDivision.get(currentRowGroup).add(row.get(targetColumnIndex));
             }
 
             // Create a new table.
             Table newTable = new Table(parser.getTableName());
 
-            // Set the column name.
-            String firstColumnName = mode + "(" + columnName + ")";
-            newTable.getColumnNames().add(firstColumnName);
+            // Set the column name. (CList + sum/avg)
             for (String name : tmpGroupTable.getColumnNames())
                 newTable.getColumnNames().add(name);
+            String firstColumnName = mode + "(" + columnName + ")";
+            newTable.getColumnNames().add(firstColumnName);
 
             // Set the data.
             int count = 0;
             for (ArrayList<Integer> group : groupDivision.keySet()) {
                 ArrayList<Integer> tmpRow = (ArrayList<Integer>) group.clone();
                 if (mode.equals("sum")) {
-                    tmpRow.add(0, sumArrayList(groupDivision.get(group)));
+                    tmpRow.add(sumArrayList(groupDivision.get(group)));
                 }
                 else if (mode.equals("avg")) {
                     int length = groupDivision.get(group).size();
-                    tmpRow.add(0, sumArrayList(groupDivision.get(group)) / length);
+                    tmpRow.add(sumArrayList(groupDivision.get(group)) / length);
                 }
                 newTable.getRowData().add(tmpRow);
             }
@@ -810,6 +823,11 @@ public class DB {
         }
     }
 
+    /**
+     * Add BTree index on certain column of a table.
+     * @param parser
+     * @throws NullPointerException
+     */
     public void bTree(CommandParser parser) throws NullPointerException {
         BplusTree<Integer, Integer> tree = new BplusTree<>(5);
 

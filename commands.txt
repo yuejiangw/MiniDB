@@ -52,7 +52,7 @@ Btree(S0hb, pricerange)
 Btree(S1hb, pricerange)
 
 Vn1:=select(S0n, pricerange = 5)
-vn2:=select(S0n, pricerange >= 4)
+Vn2:=select(S0n, pricerange >= 4)
 Vh1:=select(S0h, pricerange = 5)
 Vh2:=select(S0h, pricerange >= 4)
 Vb1:=select(S0b, pricerange = 5)

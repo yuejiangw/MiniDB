@@ -24,12 +24,13 @@ public class Main {
         LinkedHashMap<Integer, Integer> hashIndex = new LinkedHashMap<>();
 
         try {
-//            while ((command = br.readLine()) != null) {
-//                if (command.equals(""))
-//                    continue;
+
+            while ((command = br.readLine()) != null) {
+                if (command.equals(""))
+                    continue;
 
 
-            while (!(command = input.nextLine()).equals("exit")) {
+//            while (!(command = input.nextLine()).equals("exit")) {
 
                 // showDB
                 if (command.equals("showDB")) {
