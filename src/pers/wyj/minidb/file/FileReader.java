@@ -1,4 +1,4 @@
-package file;
+package pers.wyj.minidb.file;
 
 import java.io.*;
 import java.util.ArrayList;

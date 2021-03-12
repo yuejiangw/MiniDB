@@ -1,4 +1,4 @@
-package Parser;
+package pers.wyj.minidb.parser;
 
 import java.util.ArrayList;
 import java.util.Arrays;

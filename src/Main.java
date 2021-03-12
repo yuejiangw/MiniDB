@@ -1,8 +1,6 @@
-import bPlusTree.*;
-import DataBaseSystem.*;
-import file.*;
 import hashTable.*;
-import Parser.*;
+import pers.wyj.minidb.parser.CommandParser;
+import pers.wyj.minidb.system.DataBase;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -19,7 +17,7 @@ public class Main {
 
         Scanner input = new Scanner(System.in);
         String command;
-        DB dataBase = new DB();
+        DataBase dataBase = new DataBase();
         HashTable hashTable = new HashTable();
         LinkedHashMap<Integer, Integer> hashIndex = new LinkedHashMap<>();
 

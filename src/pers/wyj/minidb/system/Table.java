@@ -1,7 +1,7 @@
-package DataBaseSystem;
+package pers.wyj.minidb.system;
 
-import file.FileReader;
-import file.FileWriter;
+import pers.wyj.minidb.file.FileReader;
+import pers.wyj.minidb.file.FileWriter;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -43,14 +43,6 @@ public class Table {
     // Accessors
     //----------------
 
-    public String getTableName() {
-        return this.tableName;
-    }
-
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
-    }
-
     public ArrayList<String> getColumnNames() {
         return this.columnNames;
     }
@@ -78,13 +70,6 @@ public class Table {
     //----------------
     // Other Methods
     //----------------
-
-    public void clearTable() {
-        setTableName(null);
-        setColumnNames(new ArrayList<>());
-        setRowData(new ArrayList<>());
-        setColumnData(new LinkedHashMap<>());
-    }
 
     private void resetRowData() {
         setColumnNames(new ArrayList<>());

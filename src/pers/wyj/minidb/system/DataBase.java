@@ -1,17 +1,16 @@
-package DataBaseSystem;
+package pers.wyj.minidb.system;
 
-import Parser.CommandParser;
-import Parser.OperationExpression;
+import pers.wyj.minidb.parser.CommandParser;
+import pers.wyj.minidb.parser.OperationExpression;
 import bPlusTree.BplusTree;
-import file.FileReader;
-import file.FileWriter;
+import pers.wyj.minidb.file.FileReader;
 import hashTable.HashTable;
 import hashTable.Info;
 
 import java.io.IOException;
 import java.util.*;
 
-public class DB {
+public class DataBase {
     //----------------
     // Attributes
     //----------------
@@ -21,7 +20,7 @@ public class DB {
     //----------------
     // Constructor(s)
     //----------------
-    public DB() {
+    public DataBase () {
         tables = new LinkedHashMap<>();
     }
 

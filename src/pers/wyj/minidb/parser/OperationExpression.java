@@ -1,5 +1,5 @@
-package Parser;
-import file.FileReader;
+package pers.wyj.minidb.parser;
+import pers.wyj.minidb.file.FileReader;
 
 public class OperationExpression {
     //----------------
@@ -22,7 +22,6 @@ public class OperationExpression {
         isOperand1Int = false;
         isOperand2Int = false;
     }
-
 
     //----------------
     // Accessors
