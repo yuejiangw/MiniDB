@@ -23,12 +23,12 @@ public class Main {
 
         try {
 
-            while ((command = br.readLine()) != null) {
-                if (command.equals(""))
-                    continue;
+//            while ((command = br.readLine()) != null) {
+//                if (command.equals(""))
+//                    continue;
 
-
-//            while (!(command = input.nextLine()).equals("exit")) {
+            System.out.print(">>> ");
+            while (!(command = input.nextLine()).equals("exit")) {
 
                 // showDB
                 if (command.equals("showDB")) {
@@ -173,7 +173,9 @@ public class Main {
                     System.out.println("BTree Command Execution time: " +
                             (endTime - startTime) + "ms");
                 }
+                System.out.print(">>> ");
             }
+            System.out.println("Bye");
         }
         catch (IOException e) {
             System.out.println("I/O Error Occurs when reading command file.");
