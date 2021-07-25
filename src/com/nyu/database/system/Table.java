@@ -1,7 +1,7 @@
-package pers.wyj.minidb.system;
+package com.nyu.database.system;
 
-import pers.wyj.minidb.file.FileReader;
-import pers.wyj.minidb.file.FileWriter;
+import com.nyu.database.file.FileReader;
+import com.nyu.database.file.FileWriter;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
-import hashTable.*;
-import pers.wyj.minidb.parser.CommandParser;
-import pers.wyj.minidb.system.DataBase;
+import com.nyu.database.index.hash.HashTable;
+import com.nyu.database.parser.CommandParser;
+import com.nyu.database.system.DataBase;
 
 import java.io.BufferedReader;
 import java.io.File;

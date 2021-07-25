@@ -1,4 +1,4 @@
-package pers.wyj.minidb.file;
+package com.nyu.database.file;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -14,8 +14,9 @@ public class FileWriter {
      * @param delimiter the character to seperate two column names
      * @throws IOException if anything goes wrong when writing file
      */
-    private static void writeHead(ArrayList<String> tableHead,
-                                  BufferedWriter bw, String delimiter) throws IOException {
+    private static void writeHead(
+            ArrayList<String> tableHead,
+            BufferedWriter bw, String delimiter) throws IOException {
         for (int i = 0; i < tableHead.size(); i++) {
             bw.write(tableHead.get(i));
             if (i < tableHead.size() - 1)
@@ -31,9 +32,9 @@ public class FileWriter {
      * @param delimiter the delimiter that separates two columns
      * @throws IOException if anything is wrong when reading files.
      */
-    private static void writeData(ArrayList<ArrayList<Integer>> data,
-                                  BufferedWriter bw,
-                                  String delimiter) throws IOException {
+    private static void writeData(
+            ArrayList<ArrayList<Integer>> data,
+            BufferedWriter bw, String delimiter) throws IOException {
         for (ArrayList<Integer> datum : data) {
             for (int j = 0; j < datum.size(); j++) {
                 bw.write(Integer.toString(datum.get(j)));
@@ -44,9 +45,9 @@ public class FileWriter {
         }
     }
 
-    public static void writeFile(ArrayList<String> tableHead,
-                                 ArrayList<ArrayList<Integer>> data,
-                                 String fileName) throws IOException {
+    public static void writeFile(
+            ArrayList<String> tableHead,
+            ArrayList<ArrayList<Integer>> data, String fileName) throws IOException {
         String delimiter = "|";
         try (BufferedWriter bw = new BufferedWriter(new java.io.FileWriter(fileName))) {
             writeHead(tableHead, bw, delimiter);
@@ -67,22 +68,6 @@ public class FileWriter {
         }
         catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    /**
-     * Write
-     * @param str
-     * @throws IOException
-     */
-    public static void writeLog(String str) throws IOException {
-        String logFileName = "log.txt";
-        File file = new File(logFileName);
-        try (BufferedWriter bw = new BufferedWriter(new java.io.FileWriter(file, true))) {
-            bw.write(str+"\n");
-        }
-        catch (IOException e) {
-            System.out.println("Something is wrong when writing log file.");
         }
     }
 }

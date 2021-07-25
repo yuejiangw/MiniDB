@@ -1,4 +1,4 @@
-package bPlusTree;
+package com.nyu.database.index.bptree;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;

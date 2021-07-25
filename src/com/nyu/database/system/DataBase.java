@@ -1,11 +1,11 @@
-package pers.wyj.minidb.system;
+package com.nyu.database.system;
 
-import pers.wyj.minidb.parser.CommandParser;
-import pers.wyj.minidb.parser.OperationExpression;
-import bPlusTree.BplusTree;
-import pers.wyj.minidb.file.FileReader;
-import hashTable.HashTable;
-import hashTable.Info;
+import com.nyu.database.index.bptree.BplusTree;
+import com.nyu.database.index.hash.HashTable;
+import com.nyu.database.index.hash.Info;
+import com.nyu.database.parser.CommandParser;
+import com.nyu.database.parser.OperationExpression;
+import com.nyu.database.file.FileReader;
 
 import java.io.IOException;
 import java.util.*;

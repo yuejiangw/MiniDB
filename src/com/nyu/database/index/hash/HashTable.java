@@ -1,4 +1,4 @@
-package hashTable;
+package com.nyu.database.index.hash;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;

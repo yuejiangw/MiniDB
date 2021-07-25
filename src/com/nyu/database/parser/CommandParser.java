@@ -1,4 +1,4 @@
-package pers.wyj.minidb.parser;
+package com.nyu.database.parser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,9 +8,11 @@ public class CommandParser {
     // Attributes
     //----------------
 
-    private final static String[] allCommands = {"inputfromfile", "outputtofile",
-            "select", "project", "sum", "avg", "sumgroup", "avggroup", "join",
-            "sort", "movavg", "movsum", "btree", "hash", "concat", "showDB"};
+    private final static String[] allCommands = {
+            "inputfromfile", "outputtofile", "select", "project",
+            "sum", "avg", "sumgroup", "avggroup", "join", "sort",
+            "movavg", "movsum", "btree", "hash", "concat", "showDB"
+    };
 
     private final static String[] allOperators = {">", "<", "=", "!=", ">=", "<="};
 

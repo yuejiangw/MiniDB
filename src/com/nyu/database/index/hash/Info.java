@@ -1,4 +1,4 @@
-package hashTable;
+package com.nyu.database.index.hash;
 
 public class Info {
     private String tableName;

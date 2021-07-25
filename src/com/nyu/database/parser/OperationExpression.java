@@ -1,5 +1,5 @@
-package pers.wyj.minidb.parser;
-import pers.wyj.minidb.file.FileReader;
+package com.nyu.database.parser;
+import com.nyu.database.file.FileReader;
 
 public class OperationExpression {
     //----------------
