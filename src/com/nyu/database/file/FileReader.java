@@ -2,6 +2,7 @@ package com.nyu.database.file;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class FileReader {
     //----------------
@@ -64,13 +65,11 @@ public class FileReader {
                 String[] strSplit = line.trim().split("\\|");
                 counter += 1;
                 if (counter == 1) {
-                    for (int i = 0; i < strSplit.length; i++)
-                        getTableHead().add(strSplit[i]);
+                    for (String s : strSplit) getTableHead().add(s);
                 }
                 else {
                     ArrayList<String> tmp = new ArrayList<>();
-                    for (int i = 0; i < strSplit.length; i++)
-                        tmp.add(strSplit[i]);
+                    Collections.addAll(tmp, strSplit);
                     getValues().add(tmp);
                 }
             }
