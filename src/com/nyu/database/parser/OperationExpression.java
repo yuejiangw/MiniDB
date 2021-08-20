@@ -1,5 +1,5 @@
 package com.nyu.database.parser;
-import com.nyu.database.file.FileReader;
+import com.nyu.database.dao.DataReader;
 
 public class OperationExpression {
     //----------------
@@ -96,10 +96,11 @@ public class OperationExpression {
     }
 
     public void formalType() {
-        if (FileReader.canParseInt(getOperand1())){
+        if (DataReader.canParseInt(getOperand1())) {
             setOperand1Int(true);
         }
-        if (FileReader.canParseInt(getOperand2()))
+        if (DataReader.canParseInt(getOperand2())) {
             setOperand2Int(true);
+        }
     }
 }

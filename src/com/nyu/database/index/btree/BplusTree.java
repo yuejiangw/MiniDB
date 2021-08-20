@@ -1,4 +1,4 @@
-package com.nyu.database.index.bptree;
+package com.nyu.database.index.btree;
 /**
  * B+树的定义：
  *

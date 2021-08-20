@@ -1,16 +1,17 @@
-import com.nyu.database.index.hash.HashTable;
-import com.nyu.database.parser.CommandParser;
-import com.nyu.database.system.DataBase;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Scanner;
 
+import com.nyu.database.parser.CommandParser;
+import com.nyu.database.system.DataBase;
+
+
 public class Main {
-    public static void main (String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
         String fileName = "commands.txt";
         File file = new File(fileName);
         BufferedReader br = new BufferedReader(new FileReader(file));
@@ -18,20 +19,24 @@ public class Main {
         Scanner input = new Scanner(System.in);
         String command;
         DataBase dataBase = new DataBase();
-        HashTable hashTable = new HashTable();
         LinkedHashMap<Integer, Integer> hashIndex = new LinkedHashMap<>();
 
         try {
 
-//            while ((command = br.readLine()) != null) {
-//                if (command.equals(""))
-//                    continue;
+            while ((command = br.readLine()) != null) {
+                if (command.equals("")) {
+                    continue;
+                }
+
+                if (command.toUpperCase(Locale.ROOT).equals("exit")) {
+                    break;
+                }
 
             System.out.print(">>> ");
-            while (!(command = input.nextLine()).equals("exit")) {
+//            while (!(command = input.nextLine()).equals("exit")) {
 
                 // showDB
-                if (command.equals("showDB")) {
+                if (command.toUpperCase(Locale.ROOT).equals("showDB")) {
                     dataBase.getDBMessage();
                 }
 
@@ -43,8 +48,8 @@ public class Main {
                     long startTime = System.currentTimeMillis();
                     dataBase.inputFromFile(commandParser);
                     long endTime = System.currentTimeMillis();
-                    System.out.println("InputFromFile Command Execution time: " +
-                            (endTime - startTime) + "ms");
+                    System.out.println("InputFromFile Command Execution time: "
+                            + (endTime - startTime) + "ms");
                 }
 
                 // outputtofile(R1)
@@ -52,8 +57,8 @@ public class Main {
                     long startTime = System.currentTimeMillis();
                     dataBase.outputToFile(commandParser);
                     long endTime = System.currentTimeMillis();
-                    System.out.println("OutputToFile Command Execution time: " +
-                            (endTime - startTime) + "ms");
+                    System.out.println("OutputToFile Command Execution time: "
+                            + (endTime - startTime) + "ms");
                 }
 
                 // R2 := project(R1, saleid, itemid)
@@ -61,8 +66,8 @@ public class Main {
                     long startTime = System.currentTimeMillis();
                     dataBase.project(commandParser);
                     long endTime = System.currentTimeMillis();
-                    System.out.println("Project Command Execution time: " +
-                            (endTime - startTime) + "ms");
+                    System.out.println("Project Command Execution time: "
+                            + (endTime - startTime) + "ms");
                 }
 
                 // R3 := avg(R1, saleid)
@@ -70,8 +75,8 @@ public class Main {
                     long startTime = System.currentTimeMillis();
                     dataBase.avgOrSum(commandParser, "avg");
                     long endTime = System.currentTimeMillis();
-                    System.out.println("Avg Command Execution time: " +
-                            (endTime - startTime) + "ms");
+                    System.out.println("Avg Command Execution time: "
+                            + (endTime - startTime) + "ms");
 
                 }
 
@@ -80,17 +85,17 @@ public class Main {
                     long startTime = System.currentTimeMillis();
                     dataBase.avgOrSum(commandParser, "sum");
                     long endTime = System.currentTimeMillis();
-                    System.out.println("Sum Command Execution time: " +
-                            (endTime - startTime) + "ms");
+                    System.out.println("Sum Command Execution time: "
+                            + (endTime - startTime) + "ms");
                 }
 
                 // R5 := select(R1, CONDITION)
                 else if (commandParser.isSelect()) {
                     long startTime = System.currentTimeMillis();
-                    dataBase.select(commandParser, hashTable);
+                    dataBase.select(commandParser);
                     long endTime = System.currentTimeMillis();
-                    System.out.println("Select Command Execution time: " +
-                            (endTime - startTime) + "ms");
+                    System.out.println("Select Command Execution time: "
+                            + (endTime - startTime) + "ms");
                 }
 
                 // R6 := movavg(R1, C1, k)
@@ -98,8 +103,8 @@ public class Main {
                     long startTime = System.currentTimeMillis();
                     dataBase.movAvgOrSum(commandParser, "avg");
                     long endTime = System.currentTimeMillis();
-                    System.out.println("MovAvg Command Execution time: " +
-                            (endTime - startTime) + "ms");
+                    System.out.println("MovAvg Command Execution time: "
+                            + (endTime - startTime) + "ms");
                 }
 
                 // R7 := movsum(R1, C1, k)
@@ -107,8 +112,8 @@ public class Main {
                     long startTime = System.currentTimeMillis();
                     dataBase.movAvgOrSum(commandParser, "sum");
                     long endTime = System.currentTimeMillis();
-                    System.out.println("MovSum Command Execution time: " +
-                            (endTime - startTime) + "ms");
+                    System.out.println("MovSum Command Execution time: "
+                            + (endTime - startTime) + "ms");
                 }
 
                 // R8 := concat(R1, R2)
@@ -116,8 +121,8 @@ public class Main {
                     long startTime = System.currentTimeMillis();
                     dataBase.concat(commandParser);
                     long endTime = System.currentTimeMillis();
-                    System.out.println("Concat Command Execution time: " +
-                            (endTime - startTime) + "ms");
+                    System.out.println("Concat Command Execution time: "
+                            + (endTime - startTime) + "ms");
                 }
 
                 // R9 := sort(R1, C1)
@@ -125,8 +130,8 @@ public class Main {
                     long startTime = System.currentTimeMillis();
                     dataBase.sort(commandParser);
                     long endTime = System.currentTimeMillis();
-                    System.out.println("Sort Command Execution time: " +
-                            (endTime - startTime) + "ms");
+                    System.out.println("Sort Command Execution time: "
+                            + (endTime - startTime) + "ms");
                 }
 
                 // R10 := sumgroup(R1, C1, CList)
@@ -134,8 +139,8 @@ public class Main {
                     long startTime = System.currentTimeMillis();
                     dataBase.sumOrAvgGroup(commandParser, "sum");
                     long endTime = System.currentTimeMillis();
-                    System.out.println("SumGroup Command Execution time: " +
-                            (endTime - startTime) + "ms");
+                    System.out.println("SumGroup Command Execution time: "
+                            + (endTime - startTime) + "ms");
                 }
 
                 // R11 := avggroup(R1, C1, CList)
@@ -143,8 +148,8 @@ public class Main {
                     long startTime = System.currentTimeMillis();
                     dataBase.sumOrAvgGroup(commandParser, "avg");
                     long endTime = System.currentTimeMillis();
-                    System.out.println("AvgGroup Command Execution time: " +
-                            (endTime - startTime) + "ms");
+                    System.out.println("AvgGroup Command Execution time: "
+                            + (endTime - startTime) + "ms");
                 }
 
                 // R12 := join(R1, R2, R1.C1 > R2.C2)
@@ -152,36 +157,31 @@ public class Main {
                     long startTime = System.currentTimeMillis();
                     dataBase.join(commandParser);
                     long endTime = System.currentTimeMillis();
-                    System.out.println("Join Command Execution time: " +
-                            (endTime - startTime) + "ms");
+                    System.out.println("Join Command Execution time: "
+                            + (endTime - startTime) + "ms");
                 }
 
                 // Hash(R1, C1)
-                else if (commandParser.isHash()) {
-                    long startTime = System.currentTimeMillis();
-                    dataBase.hash(commandParser, hashTable);
-                    long endTime = System.currentTimeMillis();
-                    System.out.println("Hash Command Execution time: " +
-                            (endTime - startTime) + "ms");
-                }
-
+//                else if (commandParser.isHash()) {
+//                    long startTime = System.currentTimeMillis();
+//                    dataBase.hash(commandParser);
+//                    long endTime = System.currentTimeMillis();
+//                    System.out.println("Hash Command Execution time: "
+//                            + (endTime - startTime) + "ms");
+//                }
                 // BTree(R1, C1)
-                else if (commandParser.isBtree()) {
-                    long startTime = System.currentTimeMillis();
-                    dataBase.bTree(commandParser);
-                    long endTime = System.currentTimeMillis();
-                    System.out.println("BTree Command Execution time: " +
-                            (endTime - startTime) + "ms");
-                }
+//                else if (commandParser.isBtree()) {
+//                    long startTime = System.currentTimeMillis();
+//                    dataBase.bTree(commandParser);
+//                    long endTime = System.currentTimeMillis();
+//                    System.out.println("BTree Command Execution time: "
+//                            + (endTime - startTime) + "ms");
+//                }
                 System.out.print(">>> ");
             }
             System.out.println("Bye");
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.out.println("I/O Error Occurs when reading command file.");
         }
-
-        // When exist the program, the log file should be cleared.
-//        FileWriter.writeLog("");
     }
 }

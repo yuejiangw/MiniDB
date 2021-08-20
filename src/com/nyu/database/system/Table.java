@@ -1,11 +1,12 @@
 package com.nyu.database.system;
 
-import com.nyu.database.file.FileReader;
-import com.nyu.database.file.FileWriter;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
+
+import com.nyu.database.dao.DataReader;
+import com.nyu.database.dao.DataWriter;
 
 public class Table {
 
@@ -14,12 +15,12 @@ public class Table {
     //----------------
 
     private String tableName;
-    private ArrayList<String> columnNames;
-    private ArrayList<ArrayList<Integer>> rowData;
+    private List<String> columnNames;
+    private List<List<Integer>> rowData;
 
     // To make sure that we can get ordered items,
     // we need to use LinkedHashMap instead of HashMap.
-    private LinkedHashMap<String, ArrayList<Integer>> columnData;
+    private LinkedHashMap<String, List<Integer>> columnData;
 
     //----------------
     // Constructors
@@ -43,27 +44,27 @@ public class Table {
     // Accessors
     //----------------
 
-    public ArrayList<String> getColumnNames() {
+    public List<String> getColumnNames() {
         return this.columnNames;
     }
 
-    public void setColumnNames(ArrayList<String> columnNames) {
+    public void setColumnNames(List<String> columnNames) {
         this.columnNames = columnNames;
     }
 
-    public ArrayList<ArrayList<Integer>> getRowData() {
+    public List<List<Integer>> getRowData() {
         return this.rowData;
     }
 
-    public void setRowData(ArrayList<ArrayList<Integer>> rowData) {
+    public void setRowData(List<List<Integer>> rowData) {
         this.rowData = rowData;
     }
 
-    public LinkedHashMap<String, ArrayList<Integer>> getColumnData() {
+    public LinkedHashMap<String, List<Integer>> getColumnData() {
         return this.columnData;
     }
 
-    public void setColumnData(LinkedHashMap<String, ArrayList<Integer>> columnData) {
+    public void setColumnData(LinkedHashMap<String, List<Integer>> columnData) {
         this.columnData = columnData;
     }
 
@@ -80,22 +81,21 @@ public class Table {
     /**
      * Organize the column ordered data into the row form.
      * Be aware that we need to have column data and column names first.
-     * @param fileReader
+     * @param dataReader
      */
-    public void updateRowData(FileReader fileReader) {
+    public void updateRowData(DataReader dataReader) {
         // To avoid adding duplicate values,
         // we need to clear the column names and the row data first.
         resetRowData();
 
         // If the current table is created through reading file, then we just
         // need to copy the column names and row data from the file reader.
-        if (fileReader != null) {
-            setColumnNames((ArrayList<String>) fileReader.getTableHead().clone());
-            setRowData((ArrayList<ArrayList<Integer>>) fileReader.getFormalTypeValues().clone());
-        }
+        if (dataReader != null) {
+            setColumnNames((List<String>) dataReader.getTableHead().clone());
+            setRowData((List<List<Integer>>) dataReader.getFormalTypeValues().clone());
+        } else {
+            // Otherwise, we need to generate row data from the existing columns.
 
-        // Otherwise, we need to generate row data from the existing columns.
-        else {
             // Update column name
             for (String columnName : getColumnData().keySet()) {
                 getColumnNames().add(columnName);
@@ -104,7 +104,7 @@ public class Table {
             // Update row data.
             // To facilitate data processing, we put all the column
             // data into an ArrayList.
-            ArrayList<ArrayList<Integer>> tmpTable = new ArrayList<>();
+            List<List<Integer>> tmpTable = new ArrayList<>();
             for (String columnName : columnNames) {
                 tmpTable.add(getColumnData().get(columnName));
             }
@@ -115,7 +115,7 @@ public class Table {
                 getRowData().add(new ArrayList<>());
             }
 
-            for (ArrayList<Integer> column : tmpTable) {
+            for (List<Integer> column : tmpTable) {
                 for (int j = 0; j < column.size(); j++) {
                     getRowData().get(j).add(column.get(j));
                 }
@@ -139,7 +139,7 @@ public class Table {
             String currentColumnName = getColumnNames().get(i);
             getColumnData().put(currentColumnName, new ArrayList<>());
             for (int j = 0; j < rowNumber; j++) {
-                ArrayList<Integer> currentRowData = getRowData().get(j);
+                List<Integer> currentRowData = getRowData().get(j);
                 getColumnData().get(currentColumnName).add(currentRowData.get(i));
             }
         }
@@ -152,29 +152,29 @@ public class Table {
      * the object's fileReader, the other one should be given a specific
      * fileReader.
      */
-    public void importFile(FileReader fileReader) {
+    public void importFile(DataReader dataReader) {
 
         // For each column, create a corresponding ArrayList first.
-        for (int i = 0; i < fileReader.getTableHead().size(); i++) {
-            getColumnData().put(fileReader.getTableHead().get(i), new ArrayList<>());
+        for (int i = 0; i < dataReader.getTableHead().size(); i++) {
+            getColumnData().put(dataReader.getTableHead().get(i), new ArrayList<>());
         }
 
         // Add data.
-        for (int i = 0; i < fileReader.getFormalTypeValues().size(); i++) {
-            for (int j = 0; j < fileReader.getTableHead().size(); j++) {
+        for (int i = 0; i < dataReader.getFormalTypeValues().size(); i++) {
+            for (int j = 0; j < dataReader.getTableHead().size(); j++) {
 
                 // The column name.
-                String columnName = fileReader.getTableHead().get(j);
+                String columnName = dataReader.getTableHead().get(j);
 
                 // The data in row order.
-                ArrayList<Integer> rowData = fileReader.getFormalTypeValues().get(i);
+                List<Integer> row = dataReader.getFormalTypeValues().get(i);
 
                 // Append each data into the corresponding column.
-                getColumnData().get(columnName).add(rowData.get(j));
+                getColumnData().get(columnName).add(row.get(j));
             }
         }
         // Update column names and row data.
-        updateRowData(fileReader);
+        updateRowData(dataReader);
     }
 
     /**
@@ -186,11 +186,11 @@ public class Table {
      * @throws IOException if anything goes wrong when writing file.
      */
     public void outputFile(String fileName) throws IOException {
-        FileWriter.writeFile(getColumnNames(), getRowData(), fileName);
+        DataWriter.writeFile(getColumnNames(), getRowData(), fileName);
     }
 
     public void outputFile(String fileName, String delimiter) throws IOException {
-        FileWriter.writeFile(getColumnNames(), getRowData(), fileName, delimiter);
+        DataWriter.writeFile(getColumnNames(), getRowData(), fileName, delimiter);
     }
 
     /**
@@ -200,15 +200,17 @@ public class Table {
         System.out.println();
         for (int i = 0; i < getColumnNames().size(); i++) {
             System.out.print(getColumnNames().get(i));
-            if (i < getColumnNames().size() - 1)
+            if (i < getColumnNames().size() - 1) {
                 System.out.print("|");
+            }
         }
         System.out.println();
         for (int i = 0; i < getRowData().size(); i++) {
             for (int j = 0; j < getRowData().get(i).size(); j++) {
                 System.out.print(getRowData().get(i).get(j));
-                if (j < getRowData().get(i).size() - 1)
+                if (j < getRowData().get(i).size() - 1) {
                     System.out.print("|");
+                }
             }
             System.out.println();
         }

@@ -2,36 +2,37 @@ package com.nyu.database.parser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class CommandParser {
     //----------------
     // Attributes
     //----------------
 
-    private final static String[] allCommands = {
+    private static final String[] ALL_COMMANDS = {
             "inputfromfile", "outputtofile", "select", "project",
             "sum", "avg", "sumgroup", "avggroup", "join", "sort",
             "movavg", "movsum", "btree", "hash", "concat", "showDB"
     };
 
-    private final static String[] allOperators = {">", "<", "=", "!=", ">=", "<="};
+    private static final String[] ALL_OPERATORS = {">", "<", "=", "!=", ">=", "<="};
 
 
     private String tableName;
     private String commandName;
-    private ArrayList<String> arguments;
-    private OperationExpression condition;
+    private List<String> arguments;
+    private OperationExpression operationExpression;
 
 
     //----------------
     // Constructor(s)
     //----------------
 
-    public CommandParser () {
+    public CommandParser() {
         tableName = null;
         commandName = null;
         arguments = new ArrayList<>();
-        condition = null;
+        operationExpression = null;
     }
 
 
@@ -40,11 +41,11 @@ public class CommandParser {
     //----------------
 
     public static String[] getAllCommands() {
-        return allCommands;
+        return ALL_COMMANDS;
     }
 
     public static String[] getAllOperators() {
-        return allOperators;
+        return ALL_OPERATORS;
     }
 
     public void setTableName(String tb) {
@@ -63,16 +64,16 @@ public class CommandParser {
         return this.commandName;
     }
 
-    public ArrayList<String> getArguments() {
+    public List<String> getArguments() {
         return this.arguments;
     }
 
-    public OperationExpression getCondition() {
-        return condition;
+    public OperationExpression getOperationExpression() {
+        return operationExpression;
     }
 
-    public void setCondition(OperationExpression condition) {
-        this.condition = condition;
+    public void setOperationExpression(OperationExpression operationExpression) {
+        this.operationExpression = operationExpression;
     }
 
     //----------------
@@ -88,8 +89,9 @@ public class CommandParser {
     }
 
     public boolean isManageCommand(String command) {
-        if (!command.contains(":=") && !command.contains("(") && !command.contains(")"))
+        if (!command.contains(":=") && !command.contains("(") && !command.contains(")")) {
             return isValidCommand(command);
+        }
         return false;
     }
 
@@ -102,7 +104,7 @@ public class CommandParser {
         getArguments().add(targetTable2);
 
         parseOperator(condition);
-        parseOperands(condition, getCondition());
+        parseOperands(condition, getOperationExpression());
     }
 
     /**
@@ -116,32 +118,29 @@ public class CommandParser {
         getArguments().add(targetTable);
 
         parseOperator(condition);
-        parseOperands(condition, getCondition());
+        parseOperands(condition, getOperationExpression());
     }
 
     private void parseOperator(String condition) {
         if (condition.contains(">")) {
-            if (condition.contains(">="))
-                getCondition().setOperator(">=");
-            else
-                getCondition().setOperator(">");
-        }
-        else if (condition.contains("<")) {
-            if (condition.contains("<="))
-                getCondition().setOperator("<=");
-            else
-                getCondition().setOperator("<");
-        }
-        else if (condition.contains("!=")) {
-            getCondition().setOperator("!=");
-        }
-        else if (condition.contains("=")) {
-            getCondition().setOperator("=");
-        }
-        else {
-            System.out.println("Error! Something is wrong with the condition, " +
-                    "please recheck carefully.");
-            return;
+            if (condition.contains(">=")) {
+                getOperationExpression().setOperator(">=");
+            } else {
+                getOperationExpression().setOperator(">");
+            }
+        } else if (condition.contains("<")) {
+            if (condition.contains("<=")) {
+                getOperationExpression().setOperator("<=");
+            } else {
+                getOperationExpression().setOperator("<");
+            }
+        } else if (condition.contains("!=")) {
+            getOperationExpression().setOperator("!=");
+        } else if (condition.contains("=")) {
+            getOperationExpression().setOperator("=");
+        } else {
+            System.out.println("Error! Something is wrong with the condition, "
+                    + "please recheck carefully.");
         }
     }
 
@@ -149,31 +148,24 @@ public class CommandParser {
         if (oe.isEqual()) {
             oe.setOperand1(condition.split("=")[0]);
             oe.setOperand2(condition.split("=")[1]);
-        }
-        else if (oe.isGreater()) {
+        } else if (oe.isGreater()) {
             oe.setOperand1(condition.split(">")[0]);
             oe.setOperand2(condition.split(">")[1]);
-        }
-        else if (oe.isLess()) {
+        } else if (oe.isLess()) {
             oe.setOperand1(condition.split("<")[0]);
             oe.setOperand2(condition.split("<")[1]);
-        }
-        else if (oe.isGreaterEqual()) {
+        } else if (oe.isGreaterEqual()) {
             oe.setOperand1(condition.split(">=")[0]);
             oe.setOperand2(condition.split(">=")[1]);
-        }
-        else if (oe.isLessEqual()) {
+        } else if (oe.isLessEqual()) {
             oe.setOperand1(condition.split("<=")[0]);
             oe.setOperand2(condition.split("<=")[1]);
-        }
-        else if (oe.isNotEqual()) {
+        } else if (oe.isNotEqual()) {
             oe.setOperand1(condition.split("!=")[0]);
             oe.setOperand2(condition.split("!=")[1]);
-        }
-        else {
-            System.out.println("Error! Something is wrong with the condition, " +
-                    "please recheck carefully.");
-            return;
+        } else {
+            System.out.println("Error! Something is wrong with the condition, "
+                    + "please recheck carefully.");
         }
     }
 
@@ -193,9 +185,8 @@ public class CommandParser {
         if (strSplit.length > 1) {
             setTableName(strSplit[0]);
             strParenthesis = strSplit[1];
-        }
-        // Add index and output file commands, these commands don't have table names.
-        else if (strSplit.length == 1) {
+        } else if (strSplit.length == 1) {
+            // Add index and output file commands, these commands don't have table names.
             setTableName("");
             strParenthesis = strSplit[0];
         }
@@ -215,14 +206,14 @@ public class CommandParser {
         // The format of the "select" and "join" commands is special,
         // we need to deal with them separately.
         if (isSelect()) {
-            setCondition(new OperationExpression());
+            setOperationExpression(new OperationExpression());
             parseSelectCommand(strArguments);
-            getCondition().formalType();
+            getOperationExpression().formalType();
             return;
         }
 
         if (isJoin()) {
-            setCondition(new OperationExpression());
+            setOperationExpression(new OperationExpression());
             parseJoinCommand(strArguments);
             return;
         }

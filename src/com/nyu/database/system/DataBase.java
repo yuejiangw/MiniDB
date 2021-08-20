@@ -1,26 +1,29 @@
 package com.nyu.database.system;
 
-import com.nyu.database.index.bptree.BplusTree;
-import com.nyu.database.index.hash.HashTable;
-import com.nyu.database.index.hash.Info;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import com.nyu.database.dao.DataReader;
+//import com.nyu.database.index.hash.HashTable;
 import com.nyu.database.parser.CommandParser;
 import com.nyu.database.parser.OperationExpression;
-import com.nyu.database.file.FileReader;
-
-import java.io.IOException;
-import java.util.*;
 
 public class DataBase {
     //----------------
     // Attributes
     //----------------
-    private LinkedHashMap<String, Table> tables;
+    private Map<String, Table> tables;
 
 
     //----------------
     // Constructor(s)
     //----------------
-    public DataBase () {
+    public DataBase() {
         tables = new LinkedHashMap<>();
     }
 
@@ -32,7 +35,7 @@ public class DataBase {
         this.tables = tables;
     }
 
-    public HashMap<String, Table> getTables() {
+    public Map<String, Table> getTables() {
         return this.tables;
     }
 
@@ -83,17 +86,17 @@ public class DataBase {
         String tableName = parser.getTableName();
         Table table = new Table(tableName);
         if (getTables().containsKey(tableName)) {
-            System.out.println("Warning! There has already existed " +
-                    "a table with the same name, the old one will" +
-                    "be overlapped.");
+            System.out.println("Warning! There has already existed "
+                    + "a table with the same name, the old one will"
+                    + "be overlapped.");
             getTables().remove(tableName);
         }
 
         // Read file.
         String fileName = parser.getArguments().get(0);
-        FileReader fileReader = new FileReader();
-        fileReader.readFile(fileName);
-        table.importFile(fileReader);
+        DataReader dataReader = new DataReader();
+        dataReader.readFile(fileName);
+        table.importFile(dataReader);
 
         // Add table to the DB.
         getTables().put(tableName, table);
@@ -102,8 +105,8 @@ public class DataBase {
     public void outputToFile(String tableName, String fileName) throws IOException {
         Table table = getTableByName(tableName);
         if (table == null) {
-            System.out.println("Error! The target table doesn't exist, please " +
-                    "recheck carefully!");
+            System.out.println("Error! The target table doesn't exist, please "
+                    + "recheck carefully!");
             return;
         }
         table.outputFile(fileName);
@@ -113,8 +116,8 @@ public class DataBase {
                              String fileName, String delimiter) throws IOException {
         Table table = getTableByName(tableName);
         if (table == null) {
-            System.out.println("Error! The target table doesn't exist, please " +
-                    "recheck carefully!");
+            System.out.println("Error! The target table doesn't exist, please "
+                    + "recheck carefully!");
             return;
         }
         table.outputFile(fileName, delimiter);
@@ -124,12 +127,12 @@ public class DataBase {
         String tableName = parser.getArguments().get(0);
         Table table = getTableByName(tableName);
         if (table == null) {
-            System.out.println("Error! The target table doesn't exist, please " +
-                    "recheck carefully!");
+            System.out.println("Error! The target table doesn't exist, please "
+                    + "recheck carefully!");
             return;
-        }
-        else
+        } else {
             table.showTable();
+        }
     }
 
     /**
@@ -142,14 +145,14 @@ public class DataBase {
      */
     private void updateColumns(Table targetTable, Table newTable, String columnName) {
         if (!targetTable.getColumnNames().contains(columnName)) {
-            System.out.println("Error! There is something wrong with the column " +
-                    "name, please recheck carefully!");
+            System.out.println("Error! There is something wrong with the column "
+                    + "name, please recheck carefully!");
             return;
         }
         // Update column names.
         newTable.getColumnNames().add(columnName);
         // Update corresponding column data.
-        ArrayList<Integer> columnData = targetTable.getColumnData().get(columnName);
+        List<Integer> columnData = targetTable.getColumnData().get(columnName);
         newTable.getColumnData().put(columnName, columnData);
     }
 
@@ -163,8 +166,8 @@ public class DataBase {
 
         // Check if the target exists.
         if (targetTable == null) {
-            System.out.println("Error! The target table doesn't exist, please " +
-                    "recheck carefully!");
+            System.out.println("Error! The target table doesn't exist, please "
+                    + "recheck carefully!");
             return;
         }
 
@@ -189,8 +192,7 @@ public class DataBase {
      *             target column, "sum" means get the summation value of the target
      *             column.
      */
-    public void avgOrSum(CommandParser parser,
-                         String mode) throws NullPointerException {
+    public void avgOrSum(CommandParser parser, String mode) {
         try {
             // Create a new table.
             String newName = parser.getTableName();
@@ -198,13 +200,14 @@ public class DataBase {
 
             // Get the target column name and data.
             String columnName = parser.getArguments().get(1);
-            ArrayList<Integer> targetColumn = getTargetColumnData(parser);
+            List<Integer> targetColumn = getTargetColumnData(parser);
 
 
             // Calculate the average/sum value of the column.
             int sum = 0;
-            for (int columnValue : targetColumn)
+            for (int columnValue : targetColumn) {
                 sum += columnValue;
+            }
             int avgValue = sum / targetColumn.size();
 
             // Set column name and the corresponding data.
@@ -213,11 +216,11 @@ public class DataBase {
             newTable.getColumnNames().add(newColumnName);
             ArrayList<Integer> newColumnData = new ArrayList<>();
 
-            if (mode.equals("avg"))
+            if (mode.equals("avg")) {
                 newColumnData.add(avgValue);
-            else if (mode.equals("sum"))
+            } else if (mode.equals("sum")) {
                 newColumnData.add(sum);
-            else {
+            } else {
                 System.out.println("Error! Mode can only be avg or sum!");
                 return;
             }
@@ -225,10 +228,9 @@ public class DataBase {
             newTable.getColumnData().put(newColumnName, newColumnData);
             newTable.updateRowData(null);
             getTables().put(newName, newTable);
-        }
-        catch (NullPointerException e) {
-            System.out.println("Error! The target table or column doesn't exist, " +
-                    "please recheck carefully!");
+        } catch (NullPointerException e) {
+            System.out.println("Error! The target table or column doesn't exist, "
+                    + "please recheck carefully!");
         }
     }
 
@@ -239,20 +241,19 @@ public class DataBase {
      *             value of the target column, "sum" means get the moving
      *             summation value of the target column.
      */
-    public void movAvgOrSum(CommandParser parser, String mode)
-            throws NullPointerException, NumberFormatException {
+    public void movAvgOrSum(CommandParser parser, String mode) {
         try {
             // Get the target column name and data.
             String columnName = parser.getArguments().get(1);
-            ArrayList<Integer> targetColumn = getTargetColumnData(parser);
+            List<Integer> targetColumn = getTargetColumnData(parser);
 
             // Create a new table, set its column name.
             String newName = parser.getTableName();
             Table newTable = new Table(newName);
 
             Table targetTable = getTableByName(parser.getArguments().get(0));
-            newTable.setColumnNames((ArrayList<String>) targetTable.getColumnNames().clone());
-            newTable.setColumnData((LinkedHashMap<String, ArrayList<Integer>>)
+            newTable.setColumnNames((List<String>) targetTable.getColumnNames().clone());
+            newTable.setColumnData((Map<String, List<Integer>>)
                     targetTable.getColumnData().clone()
             );
 
@@ -272,24 +273,21 @@ public class DataBase {
                             tmp += targetColumn.get(j);
                         }
                         newColumnData.add(tmp / (i + 1));
-                    }
-                    else {
+                    } else {
                         for (int j = i - k + 1; j <= i; j++) {
                             tmp += targetColumn.get(j);
                         }
                         newColumnData.add(tmp / k);
                     }
                 }
-            }
-            else if (mode.equals("sum")) {
+            } else if (mode.equals("sum")) {
                 for (int i = 0; i < targetColumn.size(); i++) {
                     int tmp = 0;
                     if (i < k - 1) {
                         for (int j = 0; j <= i; j++) {
                             tmp += targetColumn.get(j);
                         }
-                    }
-                    else {
+                    } else {
                         for (int j = i - k + 1; j <= i; j++) {
                             tmp += targetColumn.get(j);
                         }
@@ -303,18 +301,16 @@ public class DataBase {
 //            newTable.getColumnData().put(newColumnName, newColumnData);
             newTable.updateRowData(null);
             getTables().put(newName, newTable);
-        }
-        catch (NullPointerException e1) {
-            System.out.println("Moving command Error! The target table or column " +
-                    "doesn't exist, please recheck carefully!");
-        }
-        catch (NumberFormatException e2) {
-            System.out.println("Moving command Error! The step length of the mov " +
-                    "commands must be integer, please recheck carefully!");
+        } catch (NullPointerException e1) {
+            System.out.println("Moving command Error! The target table or column "
+                    + "doesn't exist, please recheck carefully!");
+        } catch (NumberFormatException e2) {
+            System.out.println("Moving command Error! The step length of the mov "
+                    + "commands must be integer, please recheck carefully!");
         }
     }
 
-    private ArrayList<Integer> getTargetColumnData(CommandParser parser) {
+    private List<Integer> getTargetColumnData(CommandParser parser) {
         String targetTableName = parser.getArguments().get(0);
         Table targetTable = getTableByName(targetTableName);
         String targetColumnName = parser.getArguments().get(1);
@@ -348,19 +344,19 @@ public class DataBase {
             }
 
             // Get the join condition.
-            OperationExpression condition = parser.getCondition();
+            OperationExpression condition = parser.getOperationExpression();
             String table1 = condition.getOperand1().split("\\.")[0];
             String column1 = condition.getOperand1().split("\\.")[1];
             String table2 = condition.getOperand2().split("\\.")[0];
             String column2 = condition.getOperand2().split("\\.")[1];
             String operator = condition.getOperator();
-            ArrayList<Integer> columnData1 = getTableByName(table1).getColumnData().get(column1);
-            ArrayList<Integer> columnData2 = getTableByName(table2).getColumnData().get(column2);
+            List<Integer> columnData1 = getTableByName(table1).getColumnData().get(column1);
+            List<Integer> columnData2 = getTableByName(table2).getColumnData().get(column2);
 
             // Parse the operator
-            ArrayList<ArrayList<Integer>> newRowData = new ArrayList<>();
-            ArrayList<ArrayList<Integer>> oldRowData1 = targetTable1.getRowData();
-            ArrayList<ArrayList<Integer>> oldRowData2 = targetTable2.getRowData();
+            List<List<Integer>> newRowData = new ArrayList<>();
+            List<List<Integer>> oldRowData1 = targetTable1.getRowData();
+            List<List<Integer>> oldRowData2 = targetTable2.getRowData();
 
             // Get cartesian product of the two tables.
             for (int i = 0; i < columnData1.size(); i++) {
@@ -368,8 +364,7 @@ public class DataBase {
                     switch (operator) {
                         case "<":
                             if (columnData1.get(i) < columnData2.get(j)) {
-                                updateNewRowData(newRowData, oldRowData1,
-                                        oldRowData2, i, j);
+                                updateNewRowData(newRowData, oldRowData1, oldRowData2, i, j);
                             }
                             break;
                         case ">":
@@ -403,8 +398,8 @@ public class DataBase {
                             }
                             break;
                         default:
-                            System.out.println("Error! The operator can only be '>', '<', " +
-                                    "'=', '>=', '<=', or '!='. Please recheck.");
+                            System.out.println("Error! The operator can only be '>', '<', "
+                                    + "'=', '>=', '<=', or '!='. Please recheck.");
                             return;
                     }
                 }
@@ -413,8 +408,7 @@ public class DataBase {
             newTable.setRowData(newRowData);
             newTable.updateColumnData();
             getTables().put(newName, newTable);
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             System.out.println("Join Error! No such table, please recheck.");
         }
     }
@@ -429,10 +423,9 @@ public class DataBase {
      * @param i column index of target rows1
      * @param j column index of target row2
      */
-    private void updateNewRowData(ArrayList<ArrayList<Integer>> newRowData,
-                                  ArrayList<ArrayList<Integer>> oldRowData1,
-                                  ArrayList<ArrayList<Integer>> oldRowData2,
-                                  int i, int j) {
+    private void updateNewRowData(
+            List<List<Integer>> newRowData, List<List<Integer>> oldRowData1,
+            List<List<Integer>> oldRowData2, int i, int j) {
         ArrayList<Integer> currentRow = new ArrayList<>();
         currentRow.addAll(oldRowData1.get(i));
         currentRow.addAll(oldRowData2.get(j));
@@ -445,14 +438,13 @@ public class DataBase {
      * some conditions.
      * @param parser used for parsing the command.
      */
-    public void select(CommandParser parser, HashTable hashTable) {
+    public void select(CommandParser parser) {
         Table targetTable = getTableByName(parser.getArguments().get(0));
 
         // Check if the target table exists.
         if (targetTable == null) {
-            System.out.println("Error! The target table doesn't exist, please " +
-                    "recheck carefully!");
-            return;
+            throw new IllegalArgumentException(
+                    "The target table doesn't exist, please recheck carefully!");
         }
 
         // Create a new table and copy all the column names.
@@ -461,23 +453,21 @@ public class DataBase {
         newTable.setColumnNames(targetTable.getColumnNames());
 
         // Get the select conditions.
-        OperationExpression condition = parser.getCondition();
+        OperationExpression condition = parser.getOperationExpression();
         // Operand 1 is an integer
         if (condition.isOperand1Int()) {
             int constant = Integer.parseInt(condition.getOperand1());
             String columnName = condition.getOperand2();
             selectByConstant(targetTable, newTable, columnName,
-                    condition.getOperator(), constant, hashTable);
-        }
-        // Operand 2 is an integer
-        else if (condition.isOperand2Int()) {
+                    condition.getOperator(), constant);
+        } else if (condition.isOperand2Int()) {
+            // Operand 2 is an integer
             int constant = Integer.parseInt(condition.getOperand2());
             String columnName = condition.getOperand1();
             selectByConstant(targetTable, newTable, columnName,
-                    condition.getOperator(), constant, hashTable);
-        }
-        // Operand 1 and operand 2 are two column names
-        else {
+                    condition.getOperator(), constant);
+        } else {
+            // Operand 1 and operand 2 are two column names
             String column1 = condition.getOperand1();
             String column2 = condition.getOperand2();
             selectByColumn(targetTable, newTable, column1,
@@ -488,12 +478,12 @@ public class DataBase {
 
     private void selectByConstant(Table targetTable, Table newTable,
                                   String columnName, String operator,
-                                  int constant, HashTable hashTable)
+                                  int constant)
             throws NullPointerException {
         try {
-            ArrayList<Integer> columnData = targetTable.getColumnData().get(columnName);
-            ArrayList<ArrayList<Integer>> oldRowData = targetTable.getRowData();
-            ArrayList<ArrayList<Integer>> newRowData = new ArrayList<>();
+            List<Integer> columnData = targetTable.getColumnData().get(columnName);
+            List<List<Integer>> oldRowData = targetTable.getRowData();
+            List<List<Integer>> newRowData = new ArrayList<>();
 
             for (int i = 0; i < columnData.size(); i++) {
                 switch (operator) {
@@ -529,15 +519,14 @@ public class DataBase {
                         }
                         break;
                     default:
-                        System.out.println("Error! The operator can only be '>', '<', " +
-                                "'=', '>=', '<=', or '!='. Please recheck.");
-                        return;
+                        throw new IllegalArgumentException(
+                                "Error! The operator can only be '>', '<', '=', "
+                                        + "'>=', '<=', or '!='. Please recheck.");
                 }
             }
             newTable.setRowData(newRowData);
             newTable.updateColumnData();
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             System.out.println("Error! The column name doesn't exist! Please recheck.");
         }
     }
@@ -546,10 +535,10 @@ public class DataBase {
                                   String column1, String operator,
                                   String column2) throws NullPointerException {
         try {
-            ArrayList<Integer> columnData1 = targetTable.getColumnData().get(column1);
-            ArrayList<Integer> columnData2 = targetTable.getColumnData().get(column2);
-            ArrayList<ArrayList<Integer>> oldRowData = targetTable.getRowData();
-            ArrayList<ArrayList<Integer>> newRowData = new ArrayList<>();
+            List<Integer> columnData1 = targetTable.getColumnData().get(column1);
+            List<Integer> columnData2 = targetTable.getColumnData().get(column2);
+            List<List<Integer>> oldRowData = targetTable.getRowData();
+            List<List<Integer>> newRowData = new ArrayList<>();
 
             assert columnData1.size() == columnData2.size();
 
@@ -566,7 +555,7 @@ public class DataBase {
                         }
                         break;
                     case "=":
-                        if (columnData1.get(i) == columnData2.get(i)) {
+                        if (columnData1.get(i).equals(columnData2.get(i))) {
                             newRowData.add(oldRowData.get(i));
                         }
                         break;
@@ -581,20 +570,19 @@ public class DataBase {
                         }
                         break;
                     case "!=":
-                        if (columnData1.get(i) != columnData2.get(i)) {
+                        if (!columnData1.get(i).equals(columnData2.get(i))) {
                             newRowData.add(oldRowData.get(i));
                         }
                         break;
                     default:
-                        System.out.println("Error! The operator can only be '>', '<', " +
-                                "'=', '>=', '<=', or '!='. Please recheck.");
-                        return;
+                        throw new IllegalArgumentException(
+                                "Error! The operator can only be '>', '<', '=', "
+                                        + "'>=', '<=', or '!='. Please recheck.");
                 }
             }
             newTable.setRowData(newRowData);
             newTable.updateColumnData();
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             System.out.println("Error! The column name doesn't exist! Please recheck.");
         }
     }
@@ -612,7 +600,7 @@ public class DataBase {
             Table targetTable = getTableByName(parser.getArguments().get(0));
 
             assert targetTable != null;
-            ArrayList<Integer> targetColumn = targetTable.getColumnData().get(columnName);
+            List<Integer> targetColumn = targetTable.getColumnData().get(columnName);
 
             // Create a new table, set its column names.
             String newName = parser.getTableName();
@@ -635,18 +623,19 @@ public class DataBase {
 
             // Add the new table to the current DB.
             getTables().put(parser.getTableName(), newTable);
-        }
-        catch (NullPointerException e) {
-            System.out.println("Sort command Error! The target tables " +
-                    "don't exist, please recheck carefully!");
+        } catch (NullPointerException e) {
+            System.out.println("Sort command Error! The target tables "
+                    + "don't exist, please recheck carefully!");
         }
     }
 
     private int getMin(ArrayList<Integer> a) {
         double min = Double.POSITIVE_INFINITY;
-        for (int data : a)
-            if (data < min)
+        for (int data : a) {
+            if (data < min) {
                 min = data;
+            }
+        }
         return (int) min;
     }
 
@@ -669,20 +658,21 @@ public class DataBase {
             newTable.setColumnNames(targetTable1.getColumnNames());
 
             // Append rows into the new table.
-            for (ArrayList<Integer> row : targetTable1.getRowData())
+            for (List<Integer> row : targetTable1.getRowData()) {
                 newTable.getRowData().add(row);
-            for (ArrayList<Integer> row : targetTable2.getRowData())
+            }
+            for (List<Integer> row : targetTable2.getRowData()) {
                 newTable.getRowData().add(row);
+            }
 
             // Update corresponding columns.
             newTable.updateColumnData();
 
             // Add the new table to the current DB.
             getTables().put(parser.getTableName(), newTable);
-        }
-        catch (NullPointerException e) {
-            System.out.println("Concat command Error! The target tables " +
-                    "don't exist, please recheck carefully!");
+        } catch (NullPointerException e) {
+            System.out.println("Concat command Error! The target tables "
+                    + "don't exist, please recheck carefully!");
         }
     }
 
@@ -700,7 +690,7 @@ public class DataBase {
 
             assert targetTable != null;
             int targetColumnIndex = targetTable.getColumnNames().indexOf(columnName);
-            ArrayList<Integer> targetColumnData = targetTable.getColumnData().get(columnName);
+            List<Integer> targetColumnData = targetTable.getColumnData().get(columnName);
 
             // Get the column messages that will be grouped.
             Table tmpGroupTable = new Table();
@@ -708,7 +698,7 @@ public class DataBase {
             for (int i = 2; i < parser.getArguments().size(); i++) {
 
                 String groupColumnName = parser.getArguments().get(i);
-                ArrayList<Integer> groupColumnData = targetTable.getColumnData().get(groupColumnName);
+                List<Integer> groupColumnData = targetTable.getColumnData().get(groupColumnName);
 
                 tmpGroupTable.getColumnNames().add(groupColumnName);
                 tmpGroupTable.getColumnData().put(groupColumnName, groupColumnData);
@@ -719,16 +709,16 @@ public class DataBase {
 
             // To organize the data into groups, we use LinkedHashSet to
             // eliminate the duplicate column data.
-            LinkedHashSet<ArrayList<Integer>> groupsWithoutDuplicate = new LinkedHashSet<>(tmpGroupTable.getRowData());
+            Set<List<Integer>> groupsWithoutDuplicate = new LinkedHashSet<>(tmpGroupTable.getRowData());
 
             // The HashMap represents for each group and the corresponding target column values.
-            LinkedHashMap<ArrayList<Integer>, ArrayList<Integer>> groupDivision = new LinkedHashMap<>();
-            for (ArrayList<Integer> group : groupsWithoutDuplicate) {
+            Map<List<Integer>, List<Integer>> groupDivision = new LinkedHashMap<>();
+            for (List<Integer> group : groupsWithoutDuplicate) {
                 groupDivision.put(group, new ArrayList<>());
             }
 
-            for (ArrayList<Integer> row : targetTable.getRowData()) {
-                ArrayList<Integer> currentRowGroup = new ArrayList<>();
+            for (List<Integer> row : targetTable.getRowData()) {
+                List<Integer> currentRowGroup = new ArrayList<>();
 
                 // For current row, we organize the certain columns' data into a group.
                 for (String groupColumnName : tmpGroupTable.getColumnNames()) {
@@ -752,12 +742,11 @@ public class DataBase {
 
             // Set the data.
             int count = 0;
-            for (ArrayList<Integer> group : groupDivision.keySet()) {
+            for (List<Integer> group : groupDivision.keySet()) {
                 ArrayList<Integer> tmpRow = (ArrayList<Integer>) group.clone();
                 if (mode.equals("sum")) {
                     tmpRow.add(sumArrayList(groupDivision.get(group)));
-                }
-                else if (mode.equals("avg")) {
+                } else if (mode.equals("avg")) {
                     int length = groupDivision.get(group).size();
                     tmpRow.add(sumArrayList(groupDivision.get(group)) / length);
                 }
@@ -767,8 +756,7 @@ public class DataBase {
             // Add the new table to the current DB.
             getTables().put(parser.getTableName(), newTable);
 
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             System.out.println("SumGroup or AvgGroup Error!");
         }
 
@@ -782,69 +770,16 @@ public class DataBase {
         return result;
     }
 
-    /**
-     * Add hash index on certain column of a table.
-     * @param parser
-     * @return
-     * @throws NullPointerException
-     * @throws IOException
-     */
-    public void hash(CommandParser parser, HashTable hashTable) throws
-            NullPointerException, IOException {
-        try {
 
-            // Get the target table and column data.
-            String targetTableName = parser.getArguments().get(0);
-            Table targetTable = getTableByName(targetTableName);
-            assert targetTable != null;
-
-            String targetColumnName = parser.getArguments().get(1);
-            ArrayList<Integer> columnData = targetTable.getColumnData().get(targetColumnName);
-
-            // Write logs
-            // Format: hash tableName   columnName
-//            FileWriter.writeLog("hash\t" + targetTableName + "\t" + targetColumnName);
-
-            // Create hash index for the target column data.
-            LinkedHashMap<Integer, Integer> hashIndex = new LinkedHashMap<>();
-            for (int i = 0; i < columnData.size(); i++) {
-                hashIndex.put(columnData.get(i), i);
-            }
-
-            // Update hashTables.
-            Info info = new Info(targetTableName, targetColumnName);
-            hashTable.getHashTables().put(info, hashIndex);
-
-        }
-        catch (NullPointerException e) {
-            System.out.println("Error! For the hash command, the target table " +
-                    "or the column name may not exist!");
-        }
-    }
-
-    /**
-     * Add BTree index on certain column of a table.
-     * @param parser
-     * @throws NullPointerException
-     */
-    public void bTree(CommandParser parser) throws NullPointerException {
-        BplusTree<Integer, Integer> tree = new BplusTree<>(5);
-
-        try {
-            // Get the target table and column data.
-            String targetTableName = parser.getArguments().get(0);
-            Table targetTable = getTableByName(targetTableName);
-            assert targetTable != null;
-
-            String targetColumnName = parser.getArguments().get(1);
-            ArrayList<Integer> columnData = targetTable.getColumnData().get(targetColumnName);
-            for (int i = 0; i < columnData.size(); i++) {
-                tree.insertOrUpdate(i, columnData.get(i));
-            }
-        } catch (NullPointerException e) {
-            System.out.println("Error! For the BTree command, the target table " +
-                    "or the column name may not exist!");
-        }
-    }
+//    // TODO: Implementation of hash index.
+//    public void hash(CommandParser parser, HashTable hashTable) throws
+//            NullPointerException, IOException {
+//
+//    }
+//
+//    // TODO: Implementation of bTree index.
+//    public void bTree(CommandParser parser) throws NullPointerException {
+//        return;
+//    }
 
 }
