@@ -3,7 +3,7 @@ package com.nyu.database.index.hash;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-public class HashTable {
+public class HashIndex {
     /*
      * Attributes
      */
@@ -12,11 +12,11 @@ public class HashTable {
     /*
      * Constructor(s)
      */
-    public HashTable(HashMap<Info, LinkedHashMap<Integer, Integer>> hashTables) {
+    public HashIndex(HashMap<Info, LinkedHashMap<Integer, Integer>> hashTables) {
         this.hashTables = hashTables;
     }
 
-    public HashTable() {
+    public HashIndex() {
         this.hashTables = new HashMap<>();
     }
 

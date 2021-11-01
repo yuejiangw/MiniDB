@@ -1,4 +1,4 @@
-import com.nyu.database.index.hash.HashTable;
+import com.nyu.database.index.hash.HashIndex;
 import com.nyu.database.parser.CommandParser;
 import com.nyu.database.system.DataBase;
 
@@ -18,17 +18,17 @@ public class Main {
         Scanner input = new Scanner(System.in);
         String command;
         DataBase dataBase = new DataBase();
-        HashTable hashTable = new HashTable();
+        HashIndex hashTable = new HashIndex();
         LinkedHashMap<Integer, Integer> hashIndex = new LinkedHashMap<>();
 
         try {
 
-//            while ((command = br.readLine()) != null) {
-//                if (command.equals(""))
-//                    continue;
+            while ((command = br.readLine()) != null) {
+                if (command.equals(""))
+                    continue;
 
-            System.out.print(">>> ");
-            while (!(command = input.nextLine()).equals("exit")) {
+//            System.out.print(">>> ");
+//            while (!(command = input.nextLine()).equals("exit")) {
 
                 // showDB
                 if (command.equals("showDB")) {
